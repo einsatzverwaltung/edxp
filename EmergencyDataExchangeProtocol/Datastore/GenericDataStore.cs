@@ -11,6 +11,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
     public class GenericDataStore : IGenericDataStore
     {
         MongoDbInterface db;
+        AccessCheck acl = new AccessCheck();
 
         Dictionary<EmergencyObjectDataTypes, Type> registeredDataTypes = new Dictionary<EmergencyObjectDataTypes, Type>()
         {
@@ -25,7 +26,19 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
         public EmergencyObject GetObjectFromDatastore(Guid uid, EndpointIdentity endpoint)
         {
-            return db.GetObjectFromDatastore(uid, "objects");
+            var emergencyObject = db.GetObjectFromDatastore(uid, "objects");
+
+            bool isOwner = (emergencyObject.header.createdBy == endpoint.uid);
+
+            bool canReadInGeneral = false;
+
+            if (isOwner)
+                canReadInGeneral = true;
+
+            if (!canReadInGeneral)
+                return null;
+
+            return emergencyObject;
         }
 
         public ActionResult<EmergencyObject> CreateObjectInDatastore(EmergencyObject data, EndpointIdentity identity)
@@ -47,7 +60,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
                 data.header = new EmergencyObjectHeader();
             }
             data.header.created = DateTime.UtcNow;
-            data.header.createdBy = Guid.Empty; // TODO
+            data.header.createdBy = identity.uid; // TODO
             if (data.header.timeToLive < 120 && data.header.timeToLive != 0)
             {
                 data.header.timeToLive = 120;
@@ -64,7 +77,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
             var dataType = registeredDataTypes[data.header.dataType];
             var body = data.data.ToObject(dataType);
-
+            
             var res = db.CreateObjectInDatastore(data, "objects");
             if (res == MongoDbInterface.WriteResult.OK)
             {

@@ -17,8 +17,13 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
         public MongoDbInterface()
         {
-            var connectionString = "mongodb://localhost:27017";
-            client = new MongoClient(connectionString);
+
+            var settings = new MongoClientSettings();
+            settings.Server = new MongoServerAddress("localhost", 27017);
+            settings.ConnectTimeout = new TimeSpan(0, 0, 3);
+            settings.ServerSelectionTimeout = new TimeSpan(0, 0, 3);
+
+            client = new MongoClient(settings);
             db = client.GetDatabase("edxp");
         }
 
@@ -29,6 +34,10 @@ namespace EmergencyDataExchangeProtocol.Datastore
                 var bson = data.ToBsonDocument();
                 db.GetCollection<BsonDocument>(store).InsertOne(bson);
                 return WriteResult.OK;
+            }
+            catch (TimeoutException timeoutEx)
+            {
+                return WriteResult.ServerError;
             }
             catch (MongoWriteException we)
             {

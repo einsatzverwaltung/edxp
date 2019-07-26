@@ -18,4 +18,14 @@ namespace EmergencyDataExchangeProtocol.Models
 
         public JObject data { get; set; }
     }
+
+    public class EmergencyObjectCreateRequest
+    {
+        [JsonProperty("@uid"), BsonId()]
+        public Guid? uid { get; set; }
+        [JsonProperty("@header")]
+        public EmergencyObjectCreateHeader header { get; set; }
+
+        public JObject data { get; set; }
+    }
 }

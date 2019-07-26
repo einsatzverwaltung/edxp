@@ -30,10 +30,43 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id:guid}", Name = "Get")]
         public ActionResult<EmergencyObject> Get(Guid id)
         {
-            var res = db.GetObjectFromDatastore(id, new Models.auth.EndpointIdentity());
+            EndpointIdentity identity = new EndpointIdentity()
+            {
+                accessIdentity = new List<string>() { "fw.eu.de.he.da.mkk.mtl" },
+                name = "Testidentität",
+                uid = new Guid("73362a0a-9635-4de5-9c6d-23f0b5620e11")
+            };
+
+            var res = db.GetObjectFromDatastore(id, identity);
+            if (res == null)
+                return NotFound();
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// Returns an Object from the Datastore. Identified by its unique ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id:guid}/{**subpath}")]
+        public ActionResult<EmergencyObject> Get(Guid id, string subpath)
+        {
+            EndpointIdentity identity = new EndpointIdentity()
+            {
+                accessIdentity = new List<string>() { "fw.eu.de.he.da.mkk.mtl" },
+                name = "Testidentität",
+                uid = new Guid("73362a0a-9635-4de5-9c6d-23f0b5620e11")
+            };
+
+            var res = db.GetObjectFromDatastore(id, identity);
+            
+            var tokens = subpath.Split('/');
+            var path = string.Join("[0].", tokens);
+            var partOfResult = res.data.SelectToken(path);
+
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -51,7 +84,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             {
                 accessIdentity = new List<string>() { "fw.eu.de.he.da.mkk.mtl" },
                 name = "Testidentität",
-                uid = Guid.NewGuid()
+                uid = new Guid("73362a0a-9635-4de5-9c6d-23f0b5620e11")
             };
             var res = db.CreateObjectInDatastore(value, id);
             return res;

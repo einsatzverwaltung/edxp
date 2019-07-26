@@ -19,6 +19,14 @@ namespace EmergencyDataExchangeProtocol.Models
         public EmergencyObjectDataTypes dataType { get; set; }
     }
 
+    public class EmergencyObjectCreateHeader
+    {
+        public Dictionary<string, EmergencyObjectAccess> Access { get; set; }
+        public int timeToLive { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public EmergencyObjectDataTypes dataType { get; set; }
+    }
+
     public enum EmergencyObjectDataTypes
     {
         Einsatz = 0,

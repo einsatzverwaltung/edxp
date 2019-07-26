@@ -15,12 +15,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
     {
         public AccessCheck()
         {
-            // Gilt für alle Feuerwehren Deutschlands - Matcht Feuerwehr Main-Kinzig
-            IdentifierMatches("fw.de.he.da.mkk", "fw.de");
-            // Gilt für Feuerwehr GElnhausen, Feuerwehr Maintal darf nicht matchen
-            IdentifierMatches("fw.de.he.da.mkk.mtl", "fw.de.he.da.mkk.gn");
-            // Gilt für alle Organisationen im MKK
-            IdentifierMatches("fw.de.he.da.mkk.mtl", "?.de.he.da.mkk");
+           
         }
 
         public AccessLevelEnum CheckAccessForPath(string documentPath, List<string> identifiers, EmergencyObjectAccess accessList)
@@ -35,7 +30,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
         /// <param name="id"></param>
         /// <param name="accessSelector"></param>
         /// <returns></returns>
-        private bool IdentifierMatches(string id, string accessSelector)
+        public bool IdentifierMatches(string id, string accessSelector)
         {
             string accS = Regex.Escape(accessSelector);
 

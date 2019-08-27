@@ -6,6 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using EmergencyDataExchangeProtocol.EmergencyObjects;
+using System.Runtime.Serialization;
+using EmergencyDataExchangeProtocol.EmergencyObjects.einsatzmittel;
 
 namespace EmergencyDataExchangeProtocol.Models
 {
@@ -17,15 +20,5 @@ namespace EmergencyDataExchangeProtocol.Models
         public EmergencyObjectHeader header { get; set; }
 
         public object data { get; set; }
-    }
-
-    public class EmergencyObjectCreateRequest
-    {
-        [JsonProperty("@uid"), BsonId()]
-        public Guid? uid { get; set; }
-        [JsonProperty("@header")]
-        public EmergencyObjectCreateHeader header { get; set; }
-
-        public JObject data { get; set; }
     }
 }

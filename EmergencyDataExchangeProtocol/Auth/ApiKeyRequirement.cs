@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Auth
 {
-    public class ApiKeyRequirement : IAuthorizationRequirement
-    {
-        public IReadOnlyList<string> ApiKeys { get; set; }
+    public class ApiKeyAuthenticationHandlerOptions : AuthenticationSchemeOptions { }
 
-        public ApiKeyRequirement(IEnumerable<string> apiKeys)
+    public class ApiAuthenticationPostConfigureOptions : IPostConfigureOptions<ApiKeyAuthenticationHandlerOptions>
+    {
+        public void PostConfigure(string name, ApiKeyAuthenticationHandlerOptions options)
         {
-            ApiKeys = apiKeys?.ToList() ?? new List<string>();
+
         }
     }
 }

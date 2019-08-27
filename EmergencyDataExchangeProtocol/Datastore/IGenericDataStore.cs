@@ -10,8 +10,10 @@ namespace EmergencyDataExchangeProtocol.Datastore
 {
     public interface IGenericDataStore
     {
-        EmergencyObject GetObjectFromDatastore(Guid uid, EndpointIdentity endpoint);
-        ActionResult<EmergencyObject> CreateObjectInDatastore(EmergencyObject data, EndpointIdentity identity);
+        
+        GetObjectResult GetObjectFromDatastore(Guid uid);
+        CreateObjectResult CreateObjectInDatastore(EmergencyObject data);
+        ActionResult<EmergencyObject> UpdateObjectInDatastore(EmergencyObject datay);
 
         EndpointIdentity GetEndpointIdentityByApiKey(string apiKey);
 

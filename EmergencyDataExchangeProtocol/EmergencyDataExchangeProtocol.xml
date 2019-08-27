@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EmergencyDataExchangeProtocol</name>
+    </assembly>
+    <members>
+        <member name="M:EmergencyDataExchangeProtocol.Auth.ApiKeyAuthenticationHandler.#ctor(Microsoft.Extensions.Options.IOptionsMonitor{EmergencyDataExchangeProtocol.Auth.ApiKeyAuthenticationHandlerOptions},Microsoft.Extensions.Logging.ILoggerFactory,System.Text.Encodings.Web.UrlEncoder,Microsoft.AspNetCore.Authentication.ISystemClock,EmergencyDataExchangeProtocol.Datastore.IGenericDataStore)">
+            <summary>
+            Handler für Authentifizierung über IP Adresse des Schalters
+            </summary>
+            <param name="options"></param>
+            <param name="logger"></param>
+            <param name="encoder"></param>
+            <param name="clock"></param>
+            <param name="ctx"></param>
+            <param name="ctxDOA"></param>
+        </member>
+        <member name="T:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController">
+            <summary>
+            Controller for Generic Object Modifications
+            </summary>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObject(System.Guid)">
+            <summary>
+            Returns an Object from the Datastore. Identified by its unique ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectPart(System.Guid,System.String)">
+            <summary>
+            Returns an Object from the Datastore. Identified by its unique ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.CreateObject(EmergencyDataExchangeProtocol.Models.EmergencyObject)">
+            <summary>
+            Creates a new Object in the Datastore. The optional UID must be Unique.
+            If an object with the same UID already exists then the Post Method fails.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="T:EmergencyDataExchangeProtocol.Datastore.AccessCheck">
+            <summary>
+            This class checks the valid access level for a given Documentbranch checked against the
+            location-access-identifier
+            </summary>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Datastore.AccessCheck.IdentifierMatches(System.String,System.String)">
+            <summary>
+            Prüft ob ein vorgebener Identifikationsstring von einem AccessSelector-Pattern getroffen wird.
+            </summary>
+            <param name="id"></param>
+            <param name="accessSelector"></param>
+            <returns></returns>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Latitude">
+            <summary>
+            WGS84 Latitude der aktuellen Position
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Longitude">
+            <summary>
+            WGS84 Longitude der aktuellen Position
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.PositionTime">
+            <summary>
+            Zeitpunkt der aktuellen Position
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Accuracy">
+            <summary>
+            Genaugikeit der Positionsdaten in Metern
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Altitude">
+            <summary>
+            Altitude (Höhe) in Metern
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Heading">
+            <summary>
+            Aktuelle Richtung in Grad
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Speed">
+            <summary>
+            Aktuelle Geschwindigkeit in m/s
+            </summary>
+        </member>
+    </members>
+</doc>

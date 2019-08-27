@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EmergencyDataExchangeProtocol.EmergencyObjects.einsatz;
+using EmergencyDataExchangeProtocol.EmergencyObjects.einsatzmittel;
 using EmergencyDataExchangeProtocol.Models;
 using EmergencyDataExchangeProtocol.Models.auth;
 using MongoDB;
@@ -16,6 +18,13 @@ namespace EmergencyDataExchangeProtocol.Datastore
         MongoClient client;
         IMongoDatabase db;
 
+        static MongoDbInterface()
+        {
+
+            BsonClassMap.RegisterClassMap<Einsatz>();
+            BsonClassMap.RegisterClassMap<Einsatzmittel>();
+        }
+
         public MongoDbInterface()
         {
 
@@ -24,8 +33,38 @@ namespace EmergencyDataExchangeProtocol.Datastore
             settings.ConnectTimeout = new TimeSpan(0, 0, 3);
             settings.ServerSelectionTimeout = new TimeSpan(0, 0, 3);
 
+
             client = new MongoClient(settings);
             db = client.GetDatabase("edxp");
+        }
+
+
+
+
+        public WriteResult UpdateObjectInDatastore(EmergencyObject data, string store)
+        {
+            try
+            {
+                var bson = data.ToBsonDocument();
+                db.GetCollection<BsonDocument>(store).ReplaceOne(x => x["_id"] == data.uid, bson);
+                return WriteResult.OK;
+            }
+            catch (TimeoutException timeoutEx)
+            {
+                return WriteResult.ServerError;
+            }
+            catch (MongoWriteException we)
+            {
+                if (we.WriteError.Code == 11000)
+                {
+                    /* Duplicated */
+                    return WriteResult.Duplicated;
+                }
+                else
+                {
+                    return WriteResult.ServerError;
+                }
+            }
         }
 
         public WriteResult CreateObjectInDatastore(EmergencyObject data, string store)
@@ -66,20 +105,20 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
         public bool HasIdentities()
         {
-            return db.GetCollection<BsonDocument>("identities").EstimatedDocumentCount() > 0;
+            return db.GetCollection<EndpointIdentity>("identities").EstimatedDocumentCount() > 0;
         }
 
         public bool DeleteIdentity(Guid uuid)
         {
-            return db.GetCollection<BsonDocument>("identities").DeleteOne(b => b["_id"] == uuid).IsAcknowledged;
+            return db.GetCollection<EndpointIdentity>("identities").DeleteOne(b => b.uid == uuid).IsAcknowledged;
         }
 
         public bool CreateIdentity(EndpointIdentity id)
         {
             try
             {
-                var bson = id.ToBsonDocument();
-                db.GetCollection<BsonDocument>("identities").InsertOne(bson);
+                var bson = id;
+                db.GetCollection<EndpointIdentity>("identities").InsertOne(bson);
                 return true;
             }
             catch (Exception ex)
@@ -89,26 +128,21 @@ namespace EmergencyDataExchangeProtocol.Datastore
         }
 
         public EndpointIdentity GetIdentityByApiKey(string apiKey)
-        {
-            var obj = db.GetCollection<BsonDocument>("identities").Find(x => x["apiKeys"].AsBsonArray.Contains(apiKey)).FirstOrDefault();
+        {            
+            var obj = db.GetCollection<EndpointIdentity>("identities").Find(x => x.apiKeys.Any(t => t == apiKey)).FirstOrDefault();
             if (obj == null)
                 return null;
-            return BsonSerializer.Deserialize<EndpointIdentity>(obj);
+            return obj;
         }
 
         public EndpointIdentity GetIdentityById(Guid uid)
         {
-            var obj = db.GetCollection<BsonDocument>("identities").Find(x => x["_id"] == uid).FirstOrDefault();
+            var obj = db.GetCollection<EndpointIdentity>("identities").Find(x => x.uid == uid).FirstOrDefault();
             if (obj == null)
                 return null;
-            return BsonSerializer.Deserialize<EndpointIdentity>(obj);
+            return obj;
         }
 
-        public enum WriteResult
-        {
-            OK = 0,
-            Duplicated = 1,
-            ServerError = 2
-        }
+
     }
 }

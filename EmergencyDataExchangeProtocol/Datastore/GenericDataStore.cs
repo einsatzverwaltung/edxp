@@ -22,7 +22,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
         public GenericDataStore(ILoggerFactory log)
         {
             logger = log.CreateLogger<GenericDataStore>();
-            db = new MongoDbInterface();            
+            db = new MongoDbInterface();
         }
 
         public void InitIdentity()
@@ -33,7 +33,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
                 var newAdmin = new EndpointIdentity()
                 {
                     accessIdentity = new List<string>() { "eu" },
-                    apiKeys = new Dictionary<string, string>(),
+                    apiKeys = new List<string>(),
                     name = "Default Admin Identity",
                     uid = Guid.NewGuid()
                 };
@@ -43,7 +43,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
                     generator.GetBytes(key);
                 string apiKey = Convert.ToBase64String(key);
 
-                newAdmin.apiKeys.Add(apiKey, "Default");
+                newAdmin.apiKeys.Add(apiKey);
 
                 logger.LogInformation("There is no Identity - Created Admin with API Key " + apiKey);
 
@@ -51,35 +51,42 @@ namespace EmergencyDataExchangeProtocol.Datastore
             }
         }
 
-        public EmergencyObject GetObjectFromDatastore(Guid uid, EndpointIdentity endpoint)
+
+        public GetObjectResult GetObjectFromDatastore(Guid uid)
         {
             var emergencyObject = db.GetObjectFromDatastore(uid, "objects");
 
-            bool isOwner = (emergencyObject.header.createdBy == endpoint.uid);
-
-            bool canReadInGeneral = false;
-
-            // TODO Berechtigungen prüfen, für Nicht-Besitzer
-
-            if (isOwner)
-                canReadInGeneral = true;
-
-            if (!canReadInGeneral)
-                return null;
-
-            return emergencyObject;
+            return new GetObjectResult()
+            {
+                data = emergencyObject
+            };
         }
 
-        public ActionResult<EmergencyObject> CreateObjectInDatastore(EmergencyObject data, EndpointIdentity identity)
+        public CreateObjectResult CreateObjectInDatastore(EmergencyObject data)
         {
-            
-            
-            var res = db.CreateObjectInDatastore(data, "objects");
-            if (res == MongoDbInterface.WriteResult.OK)
+            CreateObjectResult result = new CreateObjectResult();
+
+            result.writeResult = db.CreateObjectInDatastore(data, "objects");
+            result.createdObject = data;
+
+            return result;
+
+        }
+
+        public EndpointIdentity GetEndpointIdentityByApiKey(string apiKey)
+        {
+            return db.GetIdentityByApiKey(apiKey);
+        }
+
+        public ActionResult<EmergencyObject> UpdateObjectInDatastore(EmergencyObject data)
+        {
+
+            var res = db.UpdateObjectInDatastore(data, "objects");
+            if (res == WriteResult.OK)
             {
                 return new CreatedResult("/object/" + data.uid.Value.ToString(), data);
             }
-            else if (res == MongoDbInterface.WriteResult.Duplicated)
+            else if (res == WriteResult.Duplicated)
             {
                 return new ConflictResult();
             }
@@ -87,11 +94,6 @@ namespace EmergencyDataExchangeProtocol.Datastore
             {
                 return new StatusCodeResult(500);
             }
-        }
-
-        public EndpointIdentity GetEndpointIdentityByApiKey(string apiKey)
-        {
-            return new EndpointIdentity();
         }
     }
 }

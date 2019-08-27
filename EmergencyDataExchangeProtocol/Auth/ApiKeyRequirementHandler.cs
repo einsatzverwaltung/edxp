@@ -1,32 +1,87 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using EmergencyDataExchangeProtocol.Datastore;
+using EmergencyDataExchangeProtocol.Models.auth;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Auth
 {
-    public class ApiKeyRequirementHandler : AuthorizationHandler<ApiKeyRequirement>
+    public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationHandlerOptions>
     {
-        public const string API_KEY_HEADER_NAME = "Authorization";
+        ILogger log;
+        IGenericDataStore _data;
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiKeyRequirement requirement)
+        /// <summary>
+        /// Handler für Authentifizierung über IP Adresse des Schalters
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
+        /// <param name="encoder"></param>
+        /// <param name="clock"></param>
+        /// <param name="ctx"></param>
+        /// <param name="ctxDOA"></param>
+        public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyAuthenticationHandlerOptions> options,
+                    ILoggerFactory logger,
+                    UrlEncoder encoder,
+                    ISystemClock clock,
+                    IGenericDataStore data)
+                    : base(options, logger, encoder, clock)
         {
-            SucceedRequirementIfApiKeyPresentAndValid(context, requirement);
-            return Task.CompletedTask;
+            log = logger.CreateLogger<ApiKeyAuthenticationHandler>();
+            _data = data;
         }
 
-        private void SucceedRequirementIfApiKeyPresentAndValid(AuthorizationHandlerContext context, ApiKeyRequirement requirement)
+
+
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (context.Resource is AuthorizationFilterContext authorizationFilterContext)
+            var authHeader = Request.HttpContext.Request.Headers["Authorization"].ToString();
+            var authHeaderParts = authHeader.Split(' ');
+
+            if (authHeaderParts.Length >= 2
+                && authHeaderParts[0].ToLower() == "bearer")
             {
-                var apiKey = authorizationFilterContext.HttpContext.Request.Headers[API_KEY_HEADER_NAME].FirstOrDefault();
-                if (apiKey != null && requirement.ApiKeys.Any(requiredApiKey => apiKey == requiredApiKey))
+                var entity = _data.GetEndpointIdentityByApiKey(authHeaderParts[1]);
+
+                if (entity != null)
                 {
-                    context.Succeed(requirement);
+                    var identity = new GenericIdentity(entity.uid.ToString());
+                    Request.HttpContext.Items.Add("Identity", entity);
+                    Request.HttpContext.User = new ClaimsPrincipal(identity);
+                    return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), "ApiKey"));
                 }
+
+                return AuthenticateResult.Fail("Missing or malformed 'Authorization' header.");
             }
+
+            return AuthenticateResult.NoResult();
         }
+    }
+
+    public class ApiEndpointIdentity : IIdentity
+    {
+        EndpointIdentity _e;
+
+        public ApiEndpointIdentity(EndpointIdentity e)
+        {
+            _e = e;
+        }
+
+        public EndpointIdentity Identity => _e;
+
+        public string AuthenticationType => "ApiKey";
+
+        public bool IsAuthenticated => true;
+
+        public string Name => _e.name;
     }
 }

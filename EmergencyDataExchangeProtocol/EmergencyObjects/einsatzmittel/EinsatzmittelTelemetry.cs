@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.EmergencyObjects.einsatzmittel
 {
-    public class EinsatzmittelStamm
+    public class EinsatzmittelTelemetry
     {
-        [Required]
-        public string rufname { get; set; }
-        public string normbezeichnung { get; set; }
-        public string kennzeichen { get; set; }
+        [Range(0,100)]
+        public int? kraftstoffstand { get; set; }
     }
 }

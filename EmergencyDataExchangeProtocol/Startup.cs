@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using EmergencyDataExchangeProtocol.Auth;
 using EmergencyDataExchangeProtocol.Datastore;
@@ -30,18 +32,18 @@ namespace EmergencyDataExchangeProtocol
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddScoped<IGenericDataStore, GenericDataStore>();
 
-            services.AddTransient<IAuthorizationHandler, ApiKeyRequirementHandler>();
-            services.AddAuthorization(authConfig =>
-            {
-                authConfig.AddPolicy("ApiKeyPolicy",
-                    policyBuilder => policyBuilder
-                        .AddRequirements(new ApiKeyRequirement(new[] { "my-secret-key" })));
-            });
+            services
+                .AddAuthentication("ApiKey")
+                .AddScheme<ApiKeyAuthenticationHandlerOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
 
-            
+            services.AddAuthorization(options =>
+            {                
+                options.AddPolicy("ExternalApi", policy =>
+                    policy.AddAuthenticationSchemes("ApiKey").RequireAuthenticatedUser());
+                options.DefaultPolicy = options.GetPolicy("ExternalApi");
+            });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
@@ -82,7 +84,11 @@ namespace EmergencyDataExchangeProtocol
                         Url = "https://example.com/license",
                     }
                 });
-                
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                c.IncludeXmlComments(xmlPath);
             });
         }
 
@@ -104,7 +110,6 @@ namespace EmergencyDataExchangeProtocol
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                
             });
 
             app.UseHttpsRedirection();

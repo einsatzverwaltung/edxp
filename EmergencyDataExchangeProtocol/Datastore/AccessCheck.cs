@@ -15,13 +15,74 @@ namespace EmergencyDataExchangeProtocol.Datastore
     {
         public AccessCheck()
         {
-           
+
         }
 
-        public AccessLevelEnum CheckAccessForPath(string documentPath, List<string> identifiers, EmergencyObjectAccess accessList)
+        public List<string> GetPathsByAccessLevel(AccessLevelEnum requiredAccessLevel, List<string> identifiers, List<EmergenyObjectAccessContainer> accessList)
         {
+            List<string> result = new List<string>();
 
-            return AccessLevelEnum.None;
+            if (identifiers == null || accessList == null)
+                return result;
+
+            foreach (var identifier in identifiers)
+            {
+                foreach (var accessEntry in accessList)
+                {
+                    if (IdentifierMatches(identifier, accessEntry.idPattern))
+                    {
+                        /* Identifier passt, Rechte übernehmen */
+                        foreach (var pathLevel in accessEntry.acl)
+                        {
+                            if (pathLevel.level >= requiredAccessLevel)
+                            {
+                                result.Add(pathLevel.path);
+                            }
+
+                            if (pathLevel.path == "*")
+                            {
+                                return result;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public AccessLevelEnum CheckAccessForPath(string documentPath, List<string> identifiers, List<EmergenyObjectAccessContainer> accessList, AccessLevelEnum requiredAccessLevel = AccessLevelEnum.Grant)
+        {
+            AccessLevelEnum level = AccessLevelEnum.None;
+
+            foreach (var identifier in identifiers)
+            {
+                foreach (var accessEntry in accessList)
+                {
+                    if (IdentifierMatches(identifier, accessEntry.idPattern))
+                    {
+                        /* Identifier passt, Rechte übernehmen */
+                        foreach(var pathLevel in accessEntry.acl)
+                        {
+                            if(pathLevel.path == "*" || documentPath.StartsWith(pathLevel.path))
+                            {
+                                if(pathLevel.level > level)
+                                {
+                                    level = pathLevel.level;
+                                    if(level >= requiredAccessLevel)
+                                    {
+                                        return level;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return level;
         }
 
         /// <summary>

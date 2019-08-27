@@ -5,9 +5,34 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Models
 {
-    public class EmergencyObjectAccess : Dictionary<string, AccessLevelEnum>
+    public class EmergenyObjectAccessContainer 
     {
+        public string idPattern { get; set; }
+        public List<EmergencyObjectAccess> acl { get; set; }
 
+        public EmergenyObjectAccessContainer() { }
+
+        public EmergenyObjectAccessContainer(string id)
+        {
+            idPattern = id;
+        }
+
+        public void AddAccessRight(string path, AccessLevelEnum level)
+        {
+            if (acl == null)
+                acl = new List<EmergencyObjectAccess>();
+            acl.Add(new EmergencyObjectAccess()
+            {
+                level = level,
+                path = path
+            });
+        }
+    }
+
+    public class EmergencyObjectAccess
+    {
+        public string path { get; set; }
+        public AccessLevelEnum level { get; set; }
     }
 
     public enum AccessLevelEnum

@@ -1,9 +1,12 @@
 ﻿using EmergencyDataExchangeProtocol.Models;
 using EmergencyDataExchangeProtocol.Models.auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Datastore
@@ -12,16 +15,40 @@ namespace EmergencyDataExchangeProtocol.Datastore
     {
         MongoDbInterface db;
         AccessCheck acl = new AccessCheck();
+        ILogger logger;
 
-        Dictionary<EmergencyObjectDataTypes, Type> registeredDataTypes = new Dictionary<EmergencyObjectDataTypes, Type>()
-        {
-            [EmergencyObjectDataTypes.Einsatz] = typeof(Models.einsatz.Einsatz),
-            [EmergencyObjectDataTypes.Einsatzmittel] = typeof(Models.einsatzmittel.Einsatzmittel)
-        };
 
-        public GenericDataStore()
+
+        public GenericDataStore(ILoggerFactory log)
         {
-            db = new MongoDbInterface();
+            logger = log.CreateLogger<GenericDataStore>();
+            db = new MongoDbInterface();            
+        }
+
+        public void InitIdentity()
+        {
+            if (!db.HasIdentities())
+            {
+                /* Neue Identity anlegen */
+                var newAdmin = new EndpointIdentity()
+                {
+                    accessIdentity = new List<string>() { "eu" },
+                    apiKeys = new Dictionary<string, string>(),
+                    name = "Default Admin Identity",
+                    uid = Guid.NewGuid()
+                };
+
+                var key = new byte[48];
+                using (var generator = RandomNumberGenerator.Create())
+                    generator.GetBytes(key);
+                string apiKey = Convert.ToBase64String(key);
+
+                newAdmin.apiKeys.Add(apiKey, "Default");
+
+                logger.LogInformation("There is no Identity - Created Admin with API Key " + apiKey);
+
+                db.CreateIdentity(newAdmin);
+            }
         }
 
         public EmergencyObject GetObjectFromDatastore(Guid uid, EndpointIdentity endpoint)
@@ -31,6 +58,8 @@ namespace EmergencyDataExchangeProtocol.Datastore
             bool isOwner = (emergencyObject.header.createdBy == endpoint.uid);
 
             bool canReadInGeneral = false;
+
+            // TODO Berechtigungen prüfen, für Nicht-Besitzer
 
             if (isOwner)
                 canReadInGeneral = true;
@@ -43,40 +72,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
         public ActionResult<EmergencyObject> CreateObjectInDatastore(EmergencyObject data, EndpointIdentity identity)
         {
-            AccessCheck ac = new AccessCheck();
-
-            if (data == null)
-            {
-                return new NoContentResult();
-            }
-
-            if (!data.uid.HasValue)
-            {
-                data.uid = Guid.NewGuid();
-            }
-
-            if (data.header == null)
-            {
-                data.header = new EmergencyObjectHeader();
-            }
-            data.header.created = DateTime.UtcNow;
-            data.header.createdBy = identity.uid; // TODO
-            if (data.header.timeToLive < 120 && data.header.timeToLive != 0)
-            {
-                data.header.timeToLive = 120;
-            }
-            if (data.header.timeToLive > 60 * 24 * 30)
-            {
-                data.header.timeToLive = 60 * 24 * 30;
-            }
-
-            if (!registeredDataTypes.ContainsKey(data.header.dataType))
-            {
-                return new BadRequestResult();
-            }
-
-            var dataType = registeredDataTypes[data.header.dataType];
-            var body = data.data.ToObject(dataType);
+            
             
             var res = db.CreateObjectInDatastore(data, "objects");
             if (res == MongoDbInterface.WriteResult.OK)
@@ -91,6 +87,11 @@ namespace EmergencyDataExchangeProtocol.Datastore
             {
                 return new StatusCodeResult(500);
             }
+        }
+
+        public EndpointIdentity GetEndpointIdentityByApiKey(string apiKey)
+        {
+            return new EndpointIdentity();
         }
     }
 }

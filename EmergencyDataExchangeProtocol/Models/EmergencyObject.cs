@@ -16,7 +16,7 @@ namespace EmergencyDataExchangeProtocol.Models
         [JsonProperty("@header")]
         public EmergencyObjectHeader header { get; set; }
 
-        public JObject data { get; set; }
+        public object data { get; set; }
     }
 
     public class EmergencyObjectCreateRequest

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmergencyDataExchangeProtocol.Models.einsatzmittel
+namespace EmergencyDataExchangeProtocol.EmergencyObjects.einsatzmittel
 {
     public class EinsatzmittelStamm
     {

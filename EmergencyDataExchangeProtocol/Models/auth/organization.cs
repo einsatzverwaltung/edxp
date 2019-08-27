@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Models.auth
 {
-    public class EndpointIdentity
+    public class organization
     {
         public Guid uid { get; set; }
         public string name { get; set; }
-        public List<string> accessIdentity { get; set; }
-        public Dictionary<string, string> apiKeys { get; set; }
+
+        public string identifier { get; set; }
     }
 }

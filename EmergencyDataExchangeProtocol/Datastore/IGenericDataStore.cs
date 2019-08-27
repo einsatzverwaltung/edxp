@@ -12,5 +12,9 @@ namespace EmergencyDataExchangeProtocol.Datastore
     {
         EmergencyObject GetObjectFromDatastore(Guid uid, EndpointIdentity endpoint);
         ActionResult<EmergencyObject> CreateObjectInDatastore(EmergencyObject data, EndpointIdentity identity);
+
+        EndpointIdentity GetEndpointIdentityByApiKey(string apiKey);
+
+        void InitIdentity();
     }
 }

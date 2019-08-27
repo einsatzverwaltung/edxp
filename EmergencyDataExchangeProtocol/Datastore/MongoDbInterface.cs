@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EmergencyDataExchangeProtocol.Models;
+using EmergencyDataExchangeProtocol.Models.auth;
 using MongoDB;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -61,6 +62,46 @@ namespace EmergencyDataExchangeProtocol.Datastore
                 return null;
             return BsonSerializer.Deserialize<EmergencyObject>(obj);
 
+        }
+
+        public bool HasIdentities()
+        {
+            return db.GetCollection<BsonDocument>("identities").EstimatedDocumentCount() > 0;
+        }
+
+        public bool DeleteIdentity(Guid uuid)
+        {
+            return db.GetCollection<BsonDocument>("identities").DeleteOne(b => b["_id"] == uuid).IsAcknowledged;
+        }
+
+        public bool CreateIdentity(EndpointIdentity id)
+        {
+            try
+            {
+                var bson = id.ToBsonDocument();
+                db.GetCollection<BsonDocument>("identities").InsertOne(bson);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public EndpointIdentity GetIdentityByApiKey(string apiKey)
+        {
+            var obj = db.GetCollection<BsonDocument>("identities").Find(x => x["apiKeys"].AsBsonArray.Contains(apiKey)).FirstOrDefault();
+            if (obj == null)
+                return null;
+            return BsonSerializer.Deserialize<EndpointIdentity>(obj);
+        }
+
+        public EndpointIdentity GetIdentityById(Guid uid)
+        {
+            var obj = db.GetCollection<BsonDocument>("identities").Find(x => x["_id"] == uid).FirstOrDefault();
+            if (obj == null)
+                return null;
+            return BsonSerializer.Deserialize<EndpointIdentity>(obj);
         }
 
         public enum WriteResult

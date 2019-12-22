@@ -134,7 +134,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Put(Guid id, [FromBody] MyAccount data)
+        public async Task<IActionResult> UpdateAccount(Guid id, [FromBody] MyAccount data)
         {
             var identity = GetCurrentIdentity();
 
@@ -167,7 +167,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         [HttpPut()]
         [ProducesResponseType(typeof(MyAccount), 200)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> Put([FromBody] MyAccount data)
+        public async Task<IActionResult> UpdateMyAccount([FromBody] MyAccount data)
         {
             var identity = GetCurrentIdentity();
             

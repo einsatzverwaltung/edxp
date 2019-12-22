@@ -29,7 +29,8 @@ namespace EmergencyDataExchangeProtocol.Datastore
         {
 
             var settings = new MongoClientSettings();
-            settings.Server = new MongoServerAddress("localhost", 27017);
+            settings.Server = new MongoServerAddress("edxp.bosmesh.org", 32768);
+            settings.Credential = MongoCredential.CreateCredential("admin", "root", "myMongoDbPasswordForMeOnly");            
             settings.ConnectTimeout = new TimeSpan(0, 0, 3);
             settings.ServerSelectionTimeout = new TimeSpan(0, 0, 3);
 

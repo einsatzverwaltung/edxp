@@ -10,17 +10,10 @@ namespace EmergencyDataExchangeProtocol.EmergencyObjects.common
     public class GeoPosition
     {
         /// <summary>
-        /// WGS84 Latitude der aktuellen Position
+        /// WSG84 Koordinaten
         /// </summary>
         [Required]
-        [Range(-90.0, 90.0)]
-        public double Latitude { get; set; }
-        /// <summary>
-        /// WGS84 Longitude der aktuellen Position
-        /// </summary>
-        [Required]
-        [Range(-180.0, 180.0)]
-        public double Longitude { get; set; }
+        public GeoCoordinates Coordinates { get; set; }
 
         /// <summary>
         /// Zeitpunkt der aktuellen Position
@@ -33,11 +26,6 @@ namespace EmergencyDataExchangeProtocol.EmergencyObjects.common
         public int? Accuracy { get; set; }
 
         /// <summary>
-        /// Altitude (Höhe) in Metern
-        /// </summary>
-        public double? Altitude { get; set; }
-
-        /// <summary>
         /// Aktuelle Richtung in Grad
         /// </summary>
         [Range(0, 359)]
@@ -47,7 +35,5 @@ namespace EmergencyDataExchangeProtocol.EmergencyObjects.common
         /// </summary>
         [LowerBoundValidation(0.0)]
         public double? Speed { get; set; }
-
-
     }
 }

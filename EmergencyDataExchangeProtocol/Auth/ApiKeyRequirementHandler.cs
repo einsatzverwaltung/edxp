@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Auth
 {
-    public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationHandlerOptions>
+    class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationHandlerOptions>
     {
         ILogger log;
         IGenericDataStore _data;

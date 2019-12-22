@@ -38,7 +38,19 @@ namespace EmergencyDataExchangeProtocol.Datastore
             db = client.GetDatabase("edxp");
         }
 
+        public IEnumerable<EndpointIdentity> GetAllEndpointsFromDatastore()
+        {
 
+            var obj = db.GetCollection<BsonDocument>("identities").Find(Builders<BsonDocument>.Filter.Empty).ToEnumerable();
+            if (obj == null)
+                yield break;
+
+            foreach (var doc in obj)
+            {
+                yield return BsonSerializer.Deserialize<EndpointIdentity>(doc);
+            }
+
+        }
 
 
         public WriteResult UpdateObjectInDatastore(EmergencyObject data, string store)
@@ -65,6 +77,16 @@ namespace EmergencyDataExchangeProtocol.Datastore
                     return WriteResult.ServerError;
                 }
             }
+        }
+
+        public DeleteObjectResult DeleteObjectInDatastore(Guid uid, string store)
+        {
+            var res = db.GetCollection<BsonDocument>(store).DeleteOne(t => t["_id"] == uid);
+
+            DeleteObjectResult result = new DeleteObjectResult();
+            result.deleted = (res.DeletedCount > 0);
+            return result;
+
         }
 
         public WriteResult CreateObjectInDatastore(EmergencyObject data, string store)
@@ -108,8 +130,38 @@ namespace EmergencyDataExchangeProtocol.Datastore
             return db.GetCollection<EndpointIdentity>("identities").EstimatedDocumentCount() > 0;
         }
 
+        public WriteResult UpdateIdentity(EndpointIdentity data)
+        {
+            try
+            {
+                var bson = data.ToBsonDocument();
+                db.GetCollection<BsonDocument>("identities").ReplaceOne(x => x["_id"] == data.uid, bson);
+                return WriteResult.OK;
+            }
+            catch (TimeoutException timeoutEx)
+            {
+                return WriteResult.ServerError;
+            }
+            catch (MongoWriteException we)
+            {
+                if (we.WriteError.Code == 11000)
+                {
+                    /* Duplicated */
+                    return WriteResult.Duplicated;
+                }
+                else
+                {
+                    return WriteResult.ServerError;
+                }
+            }
+        }
+
         public bool DeleteIdentity(Guid uuid)
         {
+            /* Alle Objekte deren Owner derjenige ist löschen */
+            var numberOfDeletedObjects = db.GetCollection<EmergencyObject>("objects").DeleteMany(x => x.header.createdBy == uuid).DeletedCount;
+
+            /* Endpunkt löschen */
             return db.GetCollection<EndpointIdentity>("identities").DeleteOne(b => b.uid == uuid).IsAcknowledged;
         }
 
@@ -128,7 +180,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
         }
 
         public EndpointIdentity GetIdentityByApiKey(string apiKey)
-        {            
+        {
             var obj = db.GetCollection<EndpointIdentity>("identities").Find(x => x.apiKeys.Any(t => t == apiKey)).FirstOrDefault();
             if (obj == null)
                 return null;

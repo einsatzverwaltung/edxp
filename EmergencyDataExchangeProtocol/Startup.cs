@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using EmergencyDataExchangeProtocol.Auth;
 using EmergencyDataExchangeProtocol.Datastore;
+using EmergencyDataExchangeProtocol.Models;
+using EmergencyDataExchangeProtocol.Models.helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +24,12 @@ namespace EmergencyDataExchangeProtocol
 {
     public class Startup
     {
+        public static Dictionary<EmergencyObjectDataTypes, Type> registeredDataTypes = new Dictionary<EmergencyObjectDataTypes, Type>()
+        {
+            [EmergencyObjectDataTypes.Einsatz] = typeof(EmergencyObjects.einsatz.Einsatz),
+            [EmergencyObjectDataTypes.Einsatzmittel] = typeof(EmergencyObjects.einsatzmittel.Einsatzmittel)
+        };
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -53,6 +61,9 @@ namespace EmergencyDataExchangeProtocol
 
             services.AddSwaggerGen(c =>
             {
+
+                c.DocumentFilter<EmergencyObject_DocumentFilter<object>>();
+
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
@@ -85,6 +96,8 @@ namespace EmergencyDataExchangeProtocol
                     }
                 });
 
+                c.DescribeAllEnumsAsStrings();
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
@@ -109,7 +122,7 @@ namespace EmergencyDataExchangeProtocol
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Emergency Data API V1");
             });
 
             app.UseHttpsRedirection();

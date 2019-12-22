@@ -15,10 +15,136 @@
             <param name="ctx"></param>
             <param name="ctxDOA"></param>
         </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.#ctor(EmergencyDataExchangeProtocol.Datastore.IGenericDataStore)">
+            <summary>
+            Controller to Access the Documents
+            </summary>
+            <param name="db"></param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.GetAccountInfo">
+            <summary>
+            Returns Information about the current logged in Account
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.GetAccountList">
+            <summary>
+            Returns a List of all available Endpoints on this EDXP Instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.GetAccount(System.Guid)">
+            <summary>
+            Holt Accountinformationen anhand einer ID aus der Datenbank
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.CreateNewAccount(EmergencyDataExchangeProtocol.Models.account.CreateAccountRequest)">
+            <summary>
+            Creates a new Account
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.Put(System.Guid,EmergencyDataExchangeProtocol.Models.account.MyAccount)">
+            <summary>
+            Aktualisieren der Accountinformationen
+            </summary>
+            <param name="data">Eigene Accountinfos</param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.Put(EmergencyDataExchangeProtocol.Models.account.MyAccount)">
+            <summary>
+            Aktualisieren der Accountinformationen
+            </summary>
+            <param name="data">Eigene Accountinfos</param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.Delete(System.Guid)">
+            <summary>
+            Deletes an Account (And all objects with this account as owner)
+            </summary>
+            <param name="id">ID of the Account</param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.GetApiKeyList">
+            <summary>
+            Returns a List of all API Keys for the current authorized Account
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController">
             <summary>
             Controller for Generic Object Modifications
             </summary>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.CreateObject(EmergencyDataExchangeProtocol.Models.EmergencyObject)">
+            <summary>
+            Creates a new Object in the Datastore. The optional UID must be Unique.
+            If an object with the same UID already exists then the Post Method fails.
+            </summary>
+            <param name="data">The data which should be stored</param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.#ctor(EmergencyDataExchangeProtocol.Datastore.IGenericDataStore)">
+            <summary>
+            Controller to Access the Documents
+            </summary>
+            <param name="db"></param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.CanRead(EmergencyDataExchangeProtocol.Models.EmergencyObject,EmergencyDataExchangeProtocol.Models.auth.EndpointIdentity,System.String)">
+            <summary>
+            Checks if the user can read the Subpath on the given Document
+            </summary>
+            <param name="obj"></param>
+            <param name="id"></param>
+            <param name="subPath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.CanWrite(EmergencyDataExchangeProtocol.Models.EmergencyObject,EmergencyDataExchangeProtocol.Models.auth.EndpointIdentity,System.String)">
+            <summary>
+            Checks if the user can write to the document and the given Documentpath
+            </summary>
+            <param name="obj"></param>
+            <param name="id"></param>
+            <param name="subPath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.RemoveUnallowedPaths(System.Collections.Generic.List{System.String},System.Object)">
+            <summary>
+            Removes all Subpaths which are not allowed for this user to be viewed.
+            </summary>
+            <param name="allowedPaths"></param>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectPart(System.Guid,System.String)">
+            <summary>
+            Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.
+            </summary>
+            <param name="id">Unique ID of the Document</param>
+            <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.DeleteObject(System.Guid)">
+            <summary>
+            Deletes an Object from Objectstore by its UID. This is only allowed by it's Owner
+            or someone with Owner Permissions.
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.PatchObjectByJsonPatch(System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument)">
+            <summary>
+            Modifies Object by applying Json Patch Document to existing Object
+            </summary>
+            <param name="uid"></param>
+            <param name="jsonPatchDocument"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.PatchObjectByProperties(System.Guid,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Patch Documents by applying only set fields to existing Object in Datastore
+            </summary>
+            <param name="uid">ID of the Object which should be patched</param>
+            <param name="jsonUpdateDocument">The JSON Document containing only these fields and attributes which should be updated in datastore</param>
+            <returns>Returns the updated document</returns>
         </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObject(System.Guid)">
             <summary>
@@ -27,19 +153,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectPart(System.Guid,System.String)">
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdateObject(System.Int32,EmergencyDataExchangeProtocol.Models.EmergencyObject)">
             <summary>
-            Returns an Object from the Datastore. Identified by its unique ID.
+            Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.
             </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.CreateObject(EmergencyDataExchangeProtocol.Models.EmergencyObject)">
-            <summary>
-            Creates a new Object in the Datastore. The optional UID must be Unique.
-            If an object with the same UID already exists then the Post Method fails.
-            </summary>
-            <param name="value"></param>
+            <param name="id">The ID of the object</param>
+            <param name="data">The new data to replace the old data</param>
         </member>
         <member name="T:EmergencyDataExchangeProtocol.Datastore.AccessCheck">
             <summary>
@@ -55,14 +174,24 @@
             <param name="accessSelector"></param>
             <returns></returns>
         </member>
-        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Latitude">
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoCoordinates.Latitude">
             <summary>
             WGS84 Latitude der aktuellen Position
             </summary>
         </member>
-        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Longitude">
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoCoordinates.Longitude">
             <summary>
             WGS84 Longitude der aktuellen Position
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoCoordinates.Altitude">
+            <summary>
+            Altitude (Höhe) in Metern
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Coordinates">
+            <summary>
+            WSG84 Koordinaten
             </summary>
         </member>
         <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.PositionTime">
@@ -75,11 +204,6 @@
             Genaugikeit der Positionsdaten in Metern
             </summary>
         </member>
-        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Altitude">
-            <summary>
-            Altitude (Höhe) in Metern
-            </summary>
-        </member>
         <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Heading">
             <summary>
             Aktuelle Richtung in Grad
@@ -88,6 +212,31 @@
         <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.common.GeoPosition.Speed">
             <summary>
             Aktuelle Geschwindigkeit in m/s
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.einsatz.Lagemeldung.zeit">
+            <summary>
+            Zeitpunkt, zu dem die Lagemeldung abgegeben wurde
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.einsatz.Lagemeldung.meldung">
+            <summary>
+            Meldungstext, der den Inhalt der Lagemeldung enthält
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.einsatz.Lagemeldung.quelle">
+            <summary>
+            Quelle/Absender der Lagemeldung
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.einsatz.Lagemeldung.abfasser">
+            <summary>
+            Name des Abfassers der Lagemeldung (z.B. Disponent)
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.einsatz.Lagemeldung.referenzEinsatzmittel">
+            <summary>
+            Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat
             </summary>
         </member>
     </members>

@@ -17,8 +17,6 @@ namespace EmergencyDataExchangeProtocol.Datastore
         AccessCheck acl = new AccessCheck();
         ILogger logger;
 
-
-
         public GenericDataStore(ILoggerFactory log)
         {
             logger = log.CreateLogger<GenericDataStore>();
@@ -35,7 +33,13 @@ namespace EmergencyDataExchangeProtocol.Datastore
                     accessIdentity = new List<string>() { "eu" },
                     apiKeys = new List<string>(),
                     name = "Default Admin Identity",
-                    uid = Guid.NewGuid()
+                    uid = Guid.NewGuid(),
+                    isServerAdmin = true,
+                    contact = new ContactDetails()
+                    {
+                        contactMail = "admin@example.org",
+                        contactName = "Administrator"
+                    }
                 };
 
                 var key = new byte[48];
@@ -47,10 +51,56 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
                 logger.LogInformation("There is no Identity - Created Admin with API Key " + apiKey);
 
-                db.CreateIdentity(newAdmin);
+                db.CreateIdentity(newAdmin);            
             }
         }
 
+        public IEnumerable<EndpointIdentity> GetEndpointIdentities()
+        {
+            return db.GetAllEndpointsFromDatastore();
+        }
+        public EndpointIdentity CreateNewEndpoint(string name, bool isServerAdmin, List<string> accessIdentifiers, ContactDetails contact)
+        {
+            var newId = new EndpointIdentity()
+            {
+                accessIdentity = accessIdentifiers,
+                apiKeys = new List<string>(),
+                name = name,
+                uid = Guid.NewGuid(),
+                isServerAdmin = isServerAdmin,
+                contact = contact
+            };
+
+
+            var key = new byte[48];
+            using (var generator = RandomNumberGenerator.Create())
+                generator.GetBytes(key);
+            string apiKey = Convert.ToBase64String(key);
+
+            newId.apiKeys.Add(apiKey);
+
+            db.CreateIdentity(newId);
+
+            return newId;
+        }
+
+        public bool UpdateEndpointInDatastore(EndpointIdentity endpoint)
+        {
+            var res = db.UpdateIdentity(endpoint);
+            if (res == WriteResult.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void DeleteEndpoint(Guid id)
+        {            
+            db.DeleteIdentity(id);
+        }
 
         public GetObjectResult GetObjectFromDatastore(Guid uid)
         {
@@ -73,9 +123,19 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
         }
 
+        public EndpointIdentity GetEndpointIdentityByGuid(Guid id)
+        {
+            return db.GetIdentityById(id);
+        }
+
         public EndpointIdentity GetEndpointIdentityByApiKey(string apiKey)
         {
             return db.GetIdentityByApiKey(apiKey);
+        }
+
+        public DeleteObjectResult DeleteObjectInDatastore(Guid uid)
+        {
+            return db.DeleteObjectInDatastore(uid, "objects");
         }
 
         public ActionResult<EmergencyObject> UpdateObjectInDatastore(EmergencyObject data)

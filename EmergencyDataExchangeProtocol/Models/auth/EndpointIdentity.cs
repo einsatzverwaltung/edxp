@@ -12,7 +12,10 @@ namespace EmergencyDataExchangeProtocol.Models.auth
         [BsonId()]
         public Guid uid { get; set; }
         public string name { get; set; }
+        public bool isServerAdmin { get; set; }
         public List<string> accessIdentity { get; set; }
         public List<string> apiKeys { get; set; }
+
+        public ContactDetails contact { get; set; } = new ContactDetails();
     }
 }

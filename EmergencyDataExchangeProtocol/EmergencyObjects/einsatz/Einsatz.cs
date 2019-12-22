@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.EmergencyObjects.einsatz
 {
-    public class Einsatz : EmergencyObjectDataBase
+    public class Einsatz 
     {
         [Required]
         public EinsatzStamm stamm { get; set; }

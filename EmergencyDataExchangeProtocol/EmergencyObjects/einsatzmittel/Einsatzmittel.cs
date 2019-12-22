@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.EmergencyObjects.einsatzmittel
 {
-    public class Einsatzmittel : EmergencyObjectDataBase
+    public class Einsatzmittel 
     {
         [Required]
         public EinsatzmittelStamm stamm { get; set; }

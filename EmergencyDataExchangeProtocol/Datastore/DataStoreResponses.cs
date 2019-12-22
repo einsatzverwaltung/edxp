@@ -11,6 +11,10 @@ namespace EmergencyDataExchangeProtocol.Datastore
         public EmergencyObject data { get; set; }
     }
 
+    public class DeleteObjectResult
+    {
+        public bool deleted { get; set; }
+    }
 
     public class CreateObjectResult
     {

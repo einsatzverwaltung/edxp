@@ -9,6 +9,7 @@ namespace EmergencyDataExchangeProtocol.Models
 {
     public class EmergencyObjectHeader
     {
+        public int documentVersion { get; set; }
         public DateTime? created { get; set; }
         public Guid? createdBy { get; set; }
         public DateTime? lastUpdated { get; set; }

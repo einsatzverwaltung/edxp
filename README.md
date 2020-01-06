@@ -54,8 +54,6 @@ Soll ein neues Objekt angelegt werden so kann bereits in dem eigenen System eine
 `Authorization: Bearer <API Key>`
 ``
 
-
-
 ## Anlegen eines neuen Objektes (ohne ID)
 
 # Roadmap

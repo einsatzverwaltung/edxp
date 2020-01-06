@@ -9,6 +9,7 @@ using EmergencyDataExchangeProtocol.Auth;
 using EmergencyDataExchangeProtocol.Datastore;
 using EmergencyDataExchangeProtocol.Models;
 using EmergencyDataExchangeProtocol.Models.helper;
+using EmergencyDataExchangeProtocol.Service;
 using EmergencyDataExchangeProtocol.Websocket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -44,7 +45,7 @@ namespace EmergencyDataExchangeProtocol
         {
             services.AddSingleton<IGenericDataStore, GenericDataStore>();
             services.AddSingleton<IWebsocketManager, WebsocketManager>();
-            
+            services.AddSingleton<ObjectService>();
 
             services
                 .AddAuthentication("ApiKey")

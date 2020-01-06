@@ -246,6 +246,20 @@
             Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat
             </summary>
         </member>
+        <member name="M:EmergencyDataExchangeProtocol.Service.ObjectService.#ctor(EmergencyDataExchangeProtocol.Datastore.IGenericDataStore)">
+            <summary>
+            Controller to Access the Documents
+            </summary>
+            <param name="db"></param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Service.ObjectService.RemoveUnallowedPaths(System.Collections.Generic.List{System.String},System.Object)">
+            <summary>
+            Removes all Subpaths which are not allowed for this user to be viewed.
+            </summary>
+            <param name="allowedPaths"></param>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
         <member name="P:EmergencyDataExchangeProtocol.Websocket.Message.EmergencyObjectMessage.messageTrigger">
             <summary>
             Trigger Reason for this message

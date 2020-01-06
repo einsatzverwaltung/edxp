@@ -43,6 +43,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             }
             data.header.created = DateTime.UtcNow;
             data.header.createdBy = identity.uid;
+            data.header.lastUpdated = DateTime.UtcNow;
             data.header.documentVersion = 1;
             if (data.header.timeToLive < 120 && data.header.timeToLive != 0)
             {

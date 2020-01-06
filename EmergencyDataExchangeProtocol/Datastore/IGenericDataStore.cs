@@ -10,7 +10,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
 {
     public interface IGenericDataStore
     {
-        
+        List<EmergencyObject> GetObjectsFromDatastoreSince(DateTime since);
         GetObjectResult GetObjectFromDatastore(Guid uid);
         CreateObjectResult CreateObjectInDatastore(EmergencyObject data);
         DeleteObjectResult DeleteObjectInDatastore(Guid uid);

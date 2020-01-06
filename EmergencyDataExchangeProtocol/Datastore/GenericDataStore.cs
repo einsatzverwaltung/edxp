@@ -51,7 +51,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
                 logger.LogInformation("There is no Identity - Created Admin with API Key " + apiKey);
 
-                db.CreateIdentity(newAdmin);            
+                db.CreateIdentity(newAdmin);
             }
         }
 
@@ -98,7 +98,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
         }
 
         public void DeleteEndpoint(Guid id)
-        {            
+        {
             db.DeleteIdentity(id);
         }
 
@@ -110,6 +110,11 @@ namespace EmergencyDataExchangeProtocol.Datastore
             {
                 data = emergencyObject
             };
+        }
+
+        public List<EmergencyObject> GetObjectsFromDatastoreSince(DateTime since)
+        {
+                return db.GetModifiedObjectsFromDatastore(since, "objects");
         }
 
         public CreateObjectResult CreateObjectInDatastore(EmergencyObject data)

@@ -46,13 +46,13 @@
             </summary>
             <param name="value"></param>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.Put(System.Guid,EmergencyDataExchangeProtocol.Models.account.MyAccount)">
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.UpdateAccount(System.Guid,EmergencyDataExchangeProtocol.Models.account.MyAccount)">
             <summary>
             Aktualisieren der Accountinformationen
             </summary>
             <param name="data">Eigene Accountinfos</param>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.Put(EmergencyDataExchangeProtocol.Models.account.MyAccount)">
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.UpdateMyAccount(EmergencyDataExchangeProtocol.Models.account.MyAccount)">
             <summary>
             Aktualisieren der Accountinformationen
             </summary>
@@ -153,6 +153,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetModifiedObjects(System.DateTime)">
+            <summary>
+            Returns an Object from the Datastore. Identified by its unique ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdateObject(System.Int32,EmergencyDataExchangeProtocol.Models.EmergencyObject)">
             <summary>
             Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.
@@ -237,6 +244,36 @@
         <member name="P:EmergencyDataExchangeProtocol.EmergencyObjects.einsatz.Lagemeldung.referenzEinsatzmittel">
             <summary>
             Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat
+            </summary>
+        </member>
+        <member name="P:EmergencyDataExchangeProtocol.Websocket.Message.EmergencyObjectMessage.messageTrigger">
+            <summary>
+            Trigger Reason for this message
+            </summary>
+        </member>
+        <member name="T:EmergencyDataExchangeProtocol.Websocket.Message.MessageSentTrigger">
+            <summary>
+            Possible Reasons why the message was sent to the client
+            </summary>
+        </member>
+        <member name="F:EmergencyDataExchangeProtocol.Websocket.Message.MessageSentTrigger.Created">
+            <summary>
+            Object was created by an identity
+            </summary>
+        </member>
+        <member name="F:EmergencyDataExchangeProtocol.Websocket.Message.MessageSentTrigger.Updated">
+            <summary>
+            Object has been updated or patched by an identity
+            </summary>
+        </member>
+        <member name="F:EmergencyDataExchangeProtocol.Websocket.Message.MessageSentTrigger.Deleted">
+            <summary>
+            Object was deleted by its owner or someone with owner permissions
+            </summary>
+        </member>
+        <member name="F:EmergencyDataExchangeProtocol.Websocket.Message.MessageSentTrigger.Init">
+            <summary>
+            Object was modified since the given timestamp so this message was sent due to initialization request after initial connect
             </summary>
         </member>
     </members>

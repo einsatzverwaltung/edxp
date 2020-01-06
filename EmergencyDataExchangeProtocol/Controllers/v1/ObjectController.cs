@@ -29,7 +29,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// Controller to Access the Documents
         /// </summary>
         /// <param name="db"></param>
-        internal ObjectController(IGenericDataStore db)
+        public ObjectController(IGenericDataStore db)
         {
             this.db = db;
 

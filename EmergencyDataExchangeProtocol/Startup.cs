@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using EmergencyDataExchangeProtocol.Auth;
 using EmergencyDataExchangeProtocol.Datastore;
 using EmergencyDataExchangeProtocol.Models;
 using EmergencyDataExchangeProtocol.Models.helper;
+using EmergencyDataExchangeProtocol.Websocket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,7 +42,9 @@ namespace EmergencyDataExchangeProtocol
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IGenericDataStore, GenericDataStore>();
+            services.AddSingleton<IGenericDataStore, GenericDataStore>();
+            services.AddSingleton<IWebsocketManager, WebsocketManager>();
+            
 
             services
                 .AddAuthentication("ApiKey")
@@ -127,6 +131,31 @@ namespace EmergencyDataExchangeProtocol
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            app.UseWebSockets();
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path.StartsWithSegments("/ws"))
+                {
+                    if (context.WebSockets.IsWebSocketRequest)
+                    {
+                        WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                        // Websocket-Request received
+                        var websocketManager = context.RequestServices.GetService<IWebsocketManager>();
+                        await websocketManager.OnWebsocketConnected(context, webSocket);
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 400;
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+
+            });
 
             OnApplicationStarted(dataStore);
         }

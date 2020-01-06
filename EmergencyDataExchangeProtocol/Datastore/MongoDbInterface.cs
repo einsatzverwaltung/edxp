@@ -30,7 +30,7 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
             var settings = new MongoClientSettings();
             settings.Server = new MongoServerAddress("edxp.bosmesh.org", 32768);
-            settings.Credential = MongoCredential.CreateCredential("admin", "root", "myMongoDbPasswordForMeOnly");            
+            settings.Credential = MongoCredential.CreateCredential("admin", "root", "myMongoDbPasswordForMeOnly");
             settings.ConnectTimeout = new TimeSpan(0, 0, 3);
             settings.ServerSelectionTimeout = new TimeSpan(0, 0, 3);
 
@@ -114,6 +114,11 @@ namespace EmergencyDataExchangeProtocol.Datastore
                     return WriteResult.ServerError;
                 }
             }
+        }
+
+        public List<EmergencyObject> GetModifiedObjectsFromDatastore(DateTime since, string store)
+        {
+            return db.GetCollection<EmergencyObject>(store).Find(x => x.header.lastUpdated >= since).ToList();
         }
 
         public EmergencyObject GetObjectFromDatastore(Guid id, string store)

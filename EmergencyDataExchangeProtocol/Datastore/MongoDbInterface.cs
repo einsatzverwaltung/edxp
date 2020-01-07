@@ -27,10 +27,16 @@ namespace EmergencyDataExchangeProtocol.Datastore
 
         public MongoDbInterface()
         {
-
             var settings = new MongoClientSettings();
-            settings.Server = new MongoServerAddress("edxp.bosmesh.org", 32768);
-            settings.Credential = MongoCredential.CreateCredential("admin", "root", "myMongoDbPasswordForMeOnly");
+
+            string dbHostname = Environment.GetEnvironmentVariable("DB_SERVER");
+            int dbPort = int.Parse(Environment.GetEnvironmentVariable("DB_PORT"));
+            string dbName = Environment.GetEnvironmentVariable("DB_NAME");
+            string dbUser = Environment.GetEnvironmentVariable("DB_USER");
+            string dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+            settings.Server = new MongoServerAddress(dbHostname, dbPort);
+            settings.Credential = MongoCredential.CreateCredential(dbName, dbUser, dbPass);
             settings.ConnectTimeout = new TimeSpan(0, 0, 3);
             settings.ServerSelectionTimeout = new TimeSpan(0, 0, 3);
 

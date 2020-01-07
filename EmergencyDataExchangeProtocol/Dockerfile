@@ -17,6 +17,13 @@ FROM build AS publish
 RUN dotnet publish "EmergencyDataExchangeProtocol.csproj" -c Release -o /app/publish
 
 FROM base AS final
+
+ENV DB_HOST "localhost"
+ENV DB_PORT "27017"
+ENV DB_NAME "admin"
+ENV DB_USER ""
+ENV DB_PASSWORD ""
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "EmergencyDataExchangeProtocol.dll"]

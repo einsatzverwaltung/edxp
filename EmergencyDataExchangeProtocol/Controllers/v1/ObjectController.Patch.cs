@@ -19,6 +19,10 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// <param name="jsonPatchDocument"></param>
         /// <returns></returns>
         [HttpPatch("jsonpatch/{uid}")]
+        [ProducesResponseType(200, Type = typeof(EmergencyObject))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         [ProducesResponseType(400, Type = typeof(ValidationProblemDetails))]
         public IActionResult PatchObjectByJsonPatch(Guid uid, [FromBody]JsonPatchDocument jsonPatchDocument)
         {
@@ -64,7 +68,10 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// <param name="jsonUpdateDocument">The JSON Document containing only these fields and attributes which should be updated in datastore</param>
         /// <returns>Returns the updated document</returns>
         [HttpPatch("partial/{uid}")]
-
+        [ProducesResponseType(200, Type = typeof(EmergencyObject))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         [ProducesResponseType(400, Type = typeof(ValidationProblemDetails))]
         public IActionResult PatchObjectByProperties(Guid uid, [FromBody] JObject jsonUpdateDocument)
         {

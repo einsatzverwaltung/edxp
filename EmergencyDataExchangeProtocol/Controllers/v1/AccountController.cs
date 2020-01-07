@@ -62,7 +62,6 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// </summary>
         /// <returns></returns>
         [HttpGet("list")]
-        [HttpGet("modified/{since}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<PublicAccountInfo>))]
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]

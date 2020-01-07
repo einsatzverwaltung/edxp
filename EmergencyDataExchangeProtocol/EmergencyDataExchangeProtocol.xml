@@ -15,6 +15,11 @@
             <param name="ctx"></param>
             <param name="ctxDOA"></param>
         </member>
+        <member name="T:EmergencyDataExchangeProtocol.Controllers.v1.AccountController">
+            <summary>
+            Exposes an Endpoint to manage Accounts on this Server
+            </summary>
+        </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.AccountController.#ctor(EmergencyDataExchangeProtocol.Datastore.IGenericDataStore)">
             <summary>
             Controller to Access the Documents
@@ -114,14 +119,6 @@
             <param name="data"></param>
             <returns></returns>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectPart(System.Guid,System.String)">
-            <summary>
-            Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.
-            </summary>
-            <param name="id">Unique ID of the Document</param>
-            <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
-            <returns></returns>
-        </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.DeleteObject(System.Guid)">
             <summary>
             Deletes an Object from Objectstore by its UID. This is only allowed by it's Owner
@@ -145,6 +142,14 @@
             <param name="uid">ID of the Object which should be patched</param>
             <param name="jsonUpdateDocument">The JSON Document containing only these fields and attributes which should be updated in datastore</param>
             <returns>Returns the updated document</returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectPart(System.Guid,System.String)">
+            <summary>
+            Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.
+            </summary>
+            <param name="id">Unique ID of the Document</param>
+            <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
+            <returns></returns>
         </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObject(System.Guid)">
             <summary>

@@ -6,6 +6,7 @@ using EmergencyDataExchangeProtocol.Auth;
 using EmergencyDataExchangeProtocol.Datastore;
 using EmergencyDataExchangeProtocol.Models;
 using EmergencyDataExchangeProtocol.Models.auth;
+using EmergencyDataExchangeProtocol.Websocket;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -24,14 +25,16 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
     {
         IGenericDataStore db;
         AccessCheck access = new AccessCheck();
-        
+        ObjectChangeTracker changeTracker;
+
         /// <summary>
         /// Controller to Access the Documents
         /// </summary>
         /// <param name="db"></param>
-        public ObjectController(IGenericDataStore db)
+        public ObjectController(IGenericDataStore db, ObjectChangeTracker ct)
         {
             this.db = db;
+            this.changeTracker = ct;
         }
 
         private EndpointIdentity GetCurrentIdentity()

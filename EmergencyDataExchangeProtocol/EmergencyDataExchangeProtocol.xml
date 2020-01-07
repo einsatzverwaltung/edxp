@@ -87,7 +87,7 @@
             </summary>
             <param name="data">The data which should be stored</param>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.#ctor(EmergencyDataExchangeProtocol.Datastore.IGenericDataStore)">
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.#ctor(EmergencyDataExchangeProtocol.Datastore.IGenericDataStore,EmergencyDataExchangeProtocol.Websocket.ObjectChangeTracker)">
             <summary>
             Controller to Access the Documents
             </summary>
@@ -170,6 +170,14 @@
             Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.
             </summary>
             <param name="id">The ID of the object</param>
+            <param name="data">The new data to replace the old data</param>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdatePartialObject(System.Guid,System.String,Newtonsoft.Json.Linq.JToken)">
+            <summary>
+            Updates a part of an Object given by the subpath.
+            </summary>
+            <param name="uid">The ID of the object</param>
+            <param name="subpath">The sub path under which the data should be updated</param>
             <param name="data">The new data to replace the old data</param>
         </member>
         <member name="T:EmergencyDataExchangeProtocol.Datastore.AccessCheck">

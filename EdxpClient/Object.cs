@@ -76,8 +76,7 @@ namespace EdxpClient
                     }
                     else
                     {
-                        var res = await c.GetObjectPartAsync(uuid, Subpath);
-                        Helper.DeserializeEmergencyObjectBody(res);
+                        var res = await c.GetObjectPartAsync(uuid, Subpath);                        
                         Helper.DumpObjectToOutput(res, OutputFormat);
                     }
                 });
@@ -146,10 +145,12 @@ namespace EdxpClient
                     }
                     else
                     {
+                        Subpath = Subpath.Replace('/', '.');
+                        Subpath = Subpath.Replace('.', '/');
+
                         var res = await c.GetObjectPartAsync(uuid, Subpath);
 
-
-                        var file = System.IO.Path.GetTempPath() + res.Uid.ToString() + "-part.json";
+                        var file = System.IO.Path.GetTempPath() + uuid.ToString() + "-part.json";
 
                         var json = JsonConvert.SerializeObject(res, Formatting.Indented);
                         File.WriteAllText(file, json);
@@ -163,10 +164,10 @@ namespace EdxpClient
                         var newJson = File.ReadAllText(file);
                         if (newJson != json)
                         {
-                            var edxo = JsonConvert.DeserializeObject<EmergencyObject>(newJson);
+                            var edxo = JsonConvert.DeserializeObject(newJson);
                             try
                             {
-                                var resultObject = await c.PatchObjectByPropertiesAsync(res.Uid.Value, edxo);
+                                var resultObject = await c.UpdatePartialObjectAsync(uuid, Subpath, edxo);
                                 Console.Error.WriteLine("Object has been modified!");
                                 Helper.DeserializeEmergencyObjectBody(resultObject);
                                 Helper.DumpObjectToOutput(resultObject, OutputFormat);

@@ -422,6 +422,7 @@
         "tags": [
           "Object"
         ],
+        "summary": "Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.",
         "operationId": "UpdateObject",
         "consumes": [
           "application/json-patch+json",
@@ -445,6 +446,7 @@
           {
             "name": "data",
             "in": "body",
+            "description": "The new data to replace the old data",
             "schema": {
               "$ref": "#/definitions/EmergencyObject"
             }
@@ -705,7 +707,7 @@
           "200": {
             "description": "Success",
             "schema": {
-              "$ref": "#/definitions/EmergencyObject"
+              "type": "object"
             }
           },
           "401": {
@@ -824,6 +826,77 @@
           },
           "404": {
             "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/{uid}/{subpath}": {
+      "put": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Updates a part of an Object given by the subpath.",
+        "operationId": "UpdatePartialObject",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the object",
+            "format": "uuid"
+          },
+          {
+            "type": "string",
+            "name": "subpath",
+            "in": "path",
+            "required": true,
+            "description": "The sub path under which the data should be updated"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "The new data to replace the old data",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "schema": {
               "$ref": "#/definitions/ProblemDetails"
             }
@@ -1114,6 +1187,116 @@
         }
       }
     },
+    "Einsatz": {
+      "type": "object",
+      "required": [
+        "stamm"
+      ],
+      "properties": {
+        "stamm": {
+          "$ref": "#/definitions/EinsatzStamm"
+        },
+        "lagemeldungen": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Lagemeldung"
+          }
+        }
+      }
+    },
+    "EinsatzStamm": {
+      "type": "object",
+      "properties": {
+        "einsatzort": {
+          "$ref": "#/definitions/Address"
+        }
+      }
+    },
+    "Lagemeldung": {
+      "type": "object",
+      "required": [
+        "zeit",
+        "meldung"
+      ],
+      "properties": {
+        "zeit": {
+          "type": "string",
+          "description": "Zeitpunkt, zu dem die Lagemeldung abgegeben wurde",
+          "format": "date-time"
+        },
+        "meldung": {
+          "type": "string",
+          "description": "Meldungstext, der den Inhalt der Lagemeldung enthält"
+        },
+        "quelle": {
+          "type": "string",
+          "description": "Quelle/Absender der Lagemeldung"
+        },
+        "abfasser": {
+          "type": "string",
+          "description": "Name des Abfassers der Lagemeldung (z.B. Disponent)"
+        },
+        "referenzEinsatzmittel": {
+          "type": "string",
+          "description": "Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat",
+          "format": "uuid"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "stadt": {
+          "type": "string"
+        },
+        "stadtteil": {
+          "type": "string"
+        },
+        "postleitzahl": {
+          "type": "string",
+          "maxLength": 5,
+          "minLength": 5,
+          "pattern": "^[0-9]*$"
+        },
+        "strasse": {
+          "type": "string"
+        },
+        "hausnummer": {
+          "type": "string"
+        },
+        "koordinaten": {
+          "$ref": "#/definitions/GeoCoordinates"
+        }
+      }
+    },
+    "GeoCoordinates": {
+      "type": "object",
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "description": "WGS84 Latitude der aktuellen Position",
+          "format": "double",
+          "maximum": 90.0,
+          "minimum": -90.0
+        },
+        "longitude": {
+          "type": "number",
+          "description": "WGS84 Longitude der aktuellen Position",
+          "format": "double",
+          "maximum": 180.0,
+          "minimum": -180.0
+        },
+        "altitude": {
+          "type": "number",
+          "description": "Altitude (Höhe) in Metern",
+          "format": "double"
+        }
+      }
+    },
     "Einsatzmittel": {
       "type": "object",
       "required": [
@@ -1204,116 +1387,6 @@
           "type": "number",
           "description": "Aktuelle Geschwindigkeit in m/s",
           "format": "double"
-        }
-      }
-    },
-    "GeoCoordinates": {
-      "type": "object",
-      "required": [
-        "latitude",
-        "longitude"
-      ],
-      "properties": {
-        "latitude": {
-          "type": "number",
-          "description": "WGS84 Latitude der aktuellen Position",
-          "format": "double",
-          "maximum": 90.0,
-          "minimum": -90.0
-        },
-        "longitude": {
-          "type": "number",
-          "description": "WGS84 Longitude der aktuellen Position",
-          "format": "double",
-          "maximum": 180.0,
-          "minimum": -180.0
-        },
-        "altitude": {
-          "type": "number",
-          "description": "Altitude (Höhe) in Metern",
-          "format": "double"
-        }
-      }
-    },
-    "Einsatz": {
-      "type": "object",
-      "required": [
-        "stamm"
-      ],
-      "properties": {
-        "stamm": {
-          "$ref": "#/definitions/EinsatzStamm"
-        },
-        "lagemeldungen": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Lagemeldung"
-          }
-        }
-      }
-    },
-    "EinsatzStamm": {
-      "type": "object",
-      "properties": {
-        "einsatzort": {
-          "$ref": "#/definitions/Address"
-        }
-      }
-    },
-    "Lagemeldung": {
-      "type": "object",
-      "required": [
-        "zeit",
-        "meldung"
-      ],
-      "properties": {
-        "zeit": {
-          "type": "string",
-          "description": "Zeitpunkt, zu dem die Lagemeldung abgegeben wurde",
-          "format": "date-time"
-        },
-        "meldung": {
-          "type": "string",
-          "description": "Meldungstext, der den Inhalt der Lagemeldung enthält"
-        },
-        "quelle": {
-          "type": "string",
-          "description": "Quelle/Absender der Lagemeldung"
-        },
-        "abfasser": {
-          "type": "string",
-          "description": "Name des Abfassers der Lagemeldung (z.B. Disponent)"
-        },
-        "referenzEinsatzmittel": {
-          "type": "string",
-          "description": "Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat",
-          "format": "uuid"
-        }
-      }
-    },
-    "Address": {
-      "type": "object",
-      "properties": {
-        "stadt": {
-          "type": "string"
-        },
-        "stadtteil": {
-          "type": "string"
-        },
-        "postleitzahl": {
-          "type": "string",
-          "maxLength": 5,
-          "minLength": 5,
-          "pattern": "^[0-9]*$"
-        },
-        "strasse": {
-          "type": "string"
-        },
-        "hausnummer": {
-          "type": "string"
-        },
-        "koordinaten": {
-          "$ref": "#/definitions/GeoCoordinates"
         }
       }
     }

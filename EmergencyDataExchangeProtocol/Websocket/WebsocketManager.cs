@@ -26,6 +26,26 @@ namespace EmergencyDataExchangeProtocol.Websocket
             db = data;
         }
 
+        public async Task PropagateChange(EmergencyObjectMessage data)
+        {
+            data.header.created = null;
+            data.header.createdBy = null;
+            data.header.lastUpdated = null;
+            data.header.lastUpdatedBy = null;            
+
+            var jsonData = JsonConvert.SerializeObject(data);
+            var jsonDataBinary = Encoding.UTF8.GetBytes(jsonData);
+
+            Parallel.ForEach(activeWebsockets, async (ws) =>
+            {
+                if (ws.ws.State == WebSocketState.Open)
+                {
+                    // TODO, Prüfen, ob Gegenstelle dies überhaupt empfangen darf
+                    await ws.ws.SendAsync(new ArraySegment<byte>(jsonDataBinary), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+            });
+        }
+
         public async Task OnWebsocketConnected(HttpContext context, WebSocket ws)
         {
             /* Check API Key */
@@ -108,8 +128,9 @@ namespace EmergencyDataExchangeProtocol.Websocket
         }
     }
 
-    interface IWebsocketManager
+    public interface IWebsocketManager
     {
         Task OnWebsocketConnected(HttpContext context, WebSocket ws);
+        Task PropagateChange(EmergencyObjectMessage data);
     }
 }

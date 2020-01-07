@@ -1,4 +1,5 @@
 ﻿using EmergencyDataExchangeProtocol.Models;
+using EmergencyDataExchangeProtocol.Websocket;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -34,12 +35,12 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
 
             var res = result.data as EmergencyObject;
 
-            if (!CanWrite(res, identity, null))
-                return Forbid();
-
             var writePaths = GetAccessablePaths(AccessLevelEnum.Write, res, identity);
 
-
+            // TODO: Pfade durchlaufen und prüfen, ob die geschrieben werden dürfen, andere löschen!
+            // Das hier ist nur ein Workaround:
+            if (!CanWrite(res, identity, null))
+                return Forbid();
 
             jsonPatchDocument.ApplyTo(res.data);
 
@@ -52,6 +53,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             if (ModelState.IsValid)
             {
                 db.UpdateObjectInDatastore(res);
+                changeTracker.ObjectChanged(res.uid.Value, Websocket.Message.MessageSentTrigger.Updated, res, null);
                 return Ok(res);
             }
             else
@@ -83,7 +85,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
 
             var res = result.data as EmergencyObject;
 
-            // TODO: Subpath
+            // TODO: Einzelne Subpath schreiben / erlauben
 
             if (!CanWrite(res, identity, null))
                 return Forbid();
@@ -99,6 +101,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             if (ModelState.IsValid)
             {
                 db.UpdateObjectInDatastore(res);
+                changeTracker.ObjectChanged(res.uid.Value, Websocket.Message.MessageSentTrigger.Updated, res, null);
                 return Ok(res);
             }
             else

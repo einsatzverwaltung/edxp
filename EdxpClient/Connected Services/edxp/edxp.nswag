@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "swaggerGenerator": {
     "fromSwagger": {
-      "url": "https://edxp.bosmesh.org/swagger/v1/swagger.json",
+      "url": "https://localhost:5001/swagger/v1/swagger.json",
       "output": "edxp.nswag.json"
     }
   },

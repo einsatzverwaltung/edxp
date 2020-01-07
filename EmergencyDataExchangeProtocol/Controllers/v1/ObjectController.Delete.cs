@@ -1,4 +1,5 @@
 ﻿using EmergencyDataExchangeProtocol.Models;
+using EmergencyDataExchangeProtocol.Websocket;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             if (access.Contains("*"))
             {
                 db.DeleteObjectInDatastore(uid);
+                changeTracker.ObjectChanged(uid, Websocket.Message.MessageSentTrigger.Deleted, result.data, null, null);
                 return Ok();
             }
             else

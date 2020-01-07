@@ -44,6 +44,8 @@ namespace EmergencyDataExchangeProtocol
             services.AddSingleton<IGenericDataStore, GenericDataStore>();
             services.AddSingleton<IWebsocketManager, WebsocketManager>();
             services.AddSingleton<ObjectService>();
+            services.AddSingleton<ObjectChangeTracker>();
+            
 
             services
                 .AddAuthentication("ApiKey")

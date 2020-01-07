@@ -1054,6 +1054,8 @@ namespace EdxpClient.edxp
             }
         }
     
+        /// <summary>Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.</summary>
+        /// <param name="data">The new data to replace the old data</param>
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<EmergencyObject> UpdateObjectAsync(System.Guid uid, EmergencyObject data)
@@ -1061,6 +1063,8 @@ namespace EdxpClient.edxp
             return UpdateObjectAsync(uid, data, System.Threading.CancellationToken.None);
         }
     
+        /// <summary>Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.</summary>
+        /// <param name="data">The new data to replace the old data</param>
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1612,7 +1616,7 @@ namespace EdxpClient.edxp
         /// <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<EmergencyObject> GetObjectPartAsync(System.Guid id, string subpath)
+        public System.Threading.Tasks.Task<object> GetObjectPartAsync(System.Guid id, string subpath)
         {
             return GetObjectPartAsync(id, subpath, System.Threading.CancellationToken.None);
         }
@@ -1623,7 +1627,7 @@ namespace EdxpClient.edxp
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task<EmergencyObject> GetObjectPartAsync(System.Guid id, string subpath, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<object> GetObjectPartAsync(System.Guid id, string subpath, System.Threading.CancellationToken cancellationToken)
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -1665,10 +1669,10 @@ namespace EdxpClient.edxp
                         if (status_ == "200") 
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            var result_ = default(EmergencyObject); 
+                            var result_ = default(object); 
                             try
                             {
-                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<EmergencyObject>(responseData_, _settings.Value);
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(responseData_, _settings.Value);
                                 return result_; 
                             } 
                             catch (System.Exception exception_) 
@@ -1728,7 +1732,7 @@ namespace EdxpClient.edxp
                             throw new SwaggerException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(EmergencyObject);
+                        return default(object);
                     }
                     finally
                     {
@@ -1983,6 +1987,146 @@ namespace EdxpClient.edxp
                         }
             
                         return default(System.Collections.Generic.ICollection<EmergencyObject>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Updates a part of an Object given by the subpath.</summary>
+        /// <param name="uid">The ID of the object</param>
+        /// <param name="subpath">The sub path under which the data should be updated</param>
+        /// <param name="data">The new data to replace the old data</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<EmergencyObject> UpdatePartialObjectAsync(System.Guid uid, string subpath, object data)
+        {
+            return UpdatePartialObjectAsync(uid, subpath, data, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Updates a part of an Object given by the subpath.</summary>
+        /// <param name="uid">The ID of the object</param>
+        /// <param name="subpath">The sub path under which the data should be updated</param>
+        /// <param name="data">The new data to replace the old data</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task<EmergencyObject> UpdatePartialObjectAsync(System.Guid uid, string subpath, object data, System.Threading.CancellationToken cancellationToken)
+        {
+            if (uid == null)
+                throw new System.ArgumentNullException("uid");
+    
+            if (subpath == null)
+                throw new System.ArgumentNullException("subpath");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/v1/Object/{uid}/{subpath}");
+            urlBuilder_.Replace("{uid}", System.Uri.EscapeDataString(ConvertToString(uid, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{subpath}", System.Uri.EscapeDataString(ConvertToString(subpath, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            var result_ = default(EmergencyObject); 
+                            try
+                            {
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<EmergencyObject>(responseData_, _settings.Value);
+                                return result_; 
+                            } 
+                            catch (System.Exception exception_) 
+                            {
+                                throw new SwaggerException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            }
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            var result_ = default(ValidationProblemDetails); 
+                            try
+                            {
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<ValidationProblemDetails>(responseData_, _settings.Value);
+                            } 
+                            catch (System.Exception exception_) 
+                            {
+                                throw new SwaggerException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            }
+                            throw new SwaggerException<ValidationProblemDetails>("Bad Request", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            var result_ = default(ProblemDetails); 
+                            try
+                            {
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<ProblemDetails>(responseData_, _settings.Value);
+                            } 
+                            catch (System.Exception exception_) 
+                            {
+                                throw new SwaggerException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Unauthorized", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                        }
+                        else
+                        if (status_ == "403") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            var result_ = default(ProblemDetails); 
+                            try
+                            {
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<ProblemDetails>(responseData_, _settings.Value);
+                            } 
+                            catch (System.Exception exception_) 
+                            {
+                                throw new SwaggerException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Forbidden", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(EmergencyObject);
                     }
                     finally
                     {
@@ -2394,6 +2538,147 @@ namespace EdxpClient.edxp
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
+    public partial class Einsatz 
+    {
+        [Newtonsoft.Json.JsonProperty("stamm", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public EinsatzStamm Stamm { get; set; } = new EinsatzStamm();
+    
+        [Newtonsoft.Json.JsonProperty("lagemeldungen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<Lagemeldung> Lagemeldungen { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static Einsatz FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Einsatz>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
+    public partial class EinsatzStamm 
+    {
+        [Newtonsoft.Json.JsonProperty("einsatzort", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Address Einsatzort { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static EinsatzStamm FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<EinsatzStamm>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
+    public partial class Lagemeldung 
+    {
+        /// <summary>Zeitpunkt, zu dem die Lagemeldung abgegeben wurde</summary>
+        [Newtonsoft.Json.JsonProperty("zeit", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public System.DateTimeOffset Zeit { get; set; }
+    
+        /// <summary>Meldungstext, der den Inhalt der Lagemeldung enthält</summary>
+        [Newtonsoft.Json.JsonProperty("meldung", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string Meldung { get; set; }
+    
+        /// <summary>Quelle/Absender der Lagemeldung</summary>
+        [Newtonsoft.Json.JsonProperty("quelle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Quelle { get; set; }
+    
+        /// <summary>Name des Abfassers der Lagemeldung (z.B. Disponent)</summary>
+        [Newtonsoft.Json.JsonProperty("abfasser", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Abfasser { get; set; }
+    
+        /// <summary>Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat</summary>
+        [Newtonsoft.Json.JsonProperty("referenzEinsatzmittel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? ReferenzEinsatzmittel { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static Lagemeldung FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Lagemeldung>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
+    public partial class Address 
+    {
+        [Newtonsoft.Json.JsonProperty("stadt", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Stadt { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("stadtteil", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Stadtteil { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("postleitzahl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.StringLength(5, MinimumLength = 5)]
+        [System.ComponentModel.DataAnnotations.RegularExpression(@"^[0-9]*$")]
+        public string Postleitzahl { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("strasse", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Strasse { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("hausnummer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hausnummer { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("koordinaten", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public GeoCoordinates Koordinaten { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static Address FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Address>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
+    public partial class GeoCoordinates 
+    {
+        /// <summary>WGS84 Latitude der aktuellen Position</summary>
+        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Range(-90.0D, 90.0D)]
+        public double Latitude { get; set; }
+    
+        /// <summary>WGS84 Longitude der aktuellen Position</summary>
+        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Range(-180.0D, 180.0D)]
+        public double Longitude { get; set; }
+    
+        /// <summary>Altitude (Höhe) in Metern</summary>
+        [Newtonsoft.Json.JsonProperty("altitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double? Altitude { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static GeoCoordinates FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<GeoCoordinates>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
     public partial class Einsatzmittel 
     {
         [Newtonsoft.Json.JsonProperty("stamm", Required = Newtonsoft.Json.Required.Always)]
@@ -2517,147 +2802,6 @@ namespace EdxpClient.edxp
         public static GeoPosition FromJson(string data)
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<GeoPosition>(data);
-        }
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
-    public partial class GeoCoordinates 
-    {
-        /// <summary>WGS84 Latitude der aktuellen Position</summary>
-        [Newtonsoft.Json.JsonProperty("latitude", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Range(-90.0D, 90.0D)]
-        public double Latitude { get; set; }
-    
-        /// <summary>WGS84 Longitude der aktuellen Position</summary>
-        [Newtonsoft.Json.JsonProperty("longitude", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Range(-180.0D, 180.0D)]
-        public double Longitude { get; set; }
-    
-        /// <summary>Altitude (Höhe) in Metern</summary>
-        [Newtonsoft.Json.JsonProperty("altitude", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Altitude { get; set; }
-    
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static GeoCoordinates FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<GeoCoordinates>(data);
-        }
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
-    public partial class Einsatz 
-    {
-        [Newtonsoft.Json.JsonProperty("stamm", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public EinsatzStamm Stamm { get; set; } = new EinsatzStamm();
-    
-        [Newtonsoft.Json.JsonProperty("lagemeldungen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Lagemeldung> Lagemeldungen { get; set; }
-    
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static Einsatz FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<Einsatz>(data);
-        }
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
-    public partial class EinsatzStamm 
-    {
-        [Newtonsoft.Json.JsonProperty("einsatzort", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Address Einsatzort { get; set; }
-    
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static EinsatzStamm FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<EinsatzStamm>(data);
-        }
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
-    public partial class Lagemeldung 
-    {
-        /// <summary>Zeitpunkt, zu dem die Lagemeldung abgegeben wurde</summary>
-        [Newtonsoft.Json.JsonProperty("zeit", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public System.DateTimeOffset Zeit { get; set; }
-    
-        /// <summary>Meldungstext, der den Inhalt der Lagemeldung enthält</summary>
-        [Newtonsoft.Json.JsonProperty("meldung", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Meldung { get; set; }
-    
-        /// <summary>Quelle/Absender der Lagemeldung</summary>
-        [Newtonsoft.Json.JsonProperty("quelle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Quelle { get; set; }
-    
-        /// <summary>Name des Abfassers der Lagemeldung (z.B. Disponent)</summary>
-        [Newtonsoft.Json.JsonProperty("abfasser", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Abfasser { get; set; }
-    
-        /// <summary>Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat</summary>
-        [Newtonsoft.Json.JsonProperty("referenzEinsatzmittel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? ReferenzEinsatzmittel { get; set; }
-    
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static Lagemeldung FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<Lagemeldung>(data);
-        }
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.22.0 (Newtonsoft.Json v12.0.0.2)")]
-    public partial class Address 
-    {
-        [Newtonsoft.Json.JsonProperty("stadt", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Stadt { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("stadtteil", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Stadtteil { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("postleitzahl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.StringLength(5, MinimumLength = 5)]
-        [System.ComponentModel.DataAnnotations.RegularExpression(@"^[0-9]*$")]
-        public string Postleitzahl { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("strasse", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Strasse { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("hausnummer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Hausnummer { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("koordinaten", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GeoCoordinates Koordinaten { get; set; }
-    
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static Address FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<Address>(data);
         }
     
     }

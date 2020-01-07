@@ -18,13 +18,17 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
         /// <returns></returns>
         [HttpGet("{id:guid}/{**subpath}")]
-        [ProducesResponseType(200, Type = typeof(EmergencyObject))]
+        [ProducesResponseType(200, Type = typeof(object))]
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         public ActionResult<object> GetObjectPart(Guid id, string subpath)
         {
             var res = db.GetObjectFromDatastore(id);
+
+            if (res.data == null)
+                return NotFound();
+
             var emergencyObject = res.data as EmergencyObject;
 
             if (!CanRead(emergencyObject, GetCurrentIdentity(), subpath))

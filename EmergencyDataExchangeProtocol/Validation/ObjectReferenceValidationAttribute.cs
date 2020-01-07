@@ -19,7 +19,7 @@ namespace EmergencyDataExchangeProtocol.Validation
         protected override ValidationResult IsValid(
             object value, ValidationContext validationContext)
         {
-            var val = (Guid?)validationContext.ObjectInstance;
+            var val = (Guid?)value;
 
             // TODO
             if (val.HasValue)

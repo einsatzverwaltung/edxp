@@ -1,5 +1,6 @@
 ﻿using EdxpClient.edxp;
 using EdxpClient.tools;
+using EdxpClient.ws;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 using System;
@@ -91,8 +92,9 @@ namespace EdxpClient
                                 using (var reader = new StreamReader(ms, Encoding.UTF8))
                                 {
                                     var json = reader.ReadToEnd();
-                                    var data = JsonConvert.DeserializeObject<EmergencyObject>(json);
+                                    var data = JsonConvert.DeserializeObject<EmergencyObjectMessage>(json);
                                     Helper.DumpObjectToOutput(data, OutputFormat);
+                                    Console.WriteLine("");
                                 }
                             }
                         }

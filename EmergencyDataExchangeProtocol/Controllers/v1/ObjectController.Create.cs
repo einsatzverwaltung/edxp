@@ -1,5 +1,6 @@
 ﻿using EmergencyDataExchangeProtocol.Datastore;
 using EmergencyDataExchangeProtocol.Models;
+using EmergencyDataExchangeProtocol.Websocket;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System;
@@ -90,6 +91,8 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
 
                 if (res.writeResult == WriteResult.OK)
                 {
+                    changeTracker.ObjectChanged(data.uid.Value, Websocket.Message.MessageSentTrigger.Created, data, null);
+
                     return new CreatedResult("/object/" + data.uid.Value.ToString(), data);
                 }
                 else if (res.writeResult == WriteResult.Duplicated)

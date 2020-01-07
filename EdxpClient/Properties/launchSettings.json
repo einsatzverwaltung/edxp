@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EdxpClient": {
+      "commandName": "Project",
+      "commandLineArgs": "object delete dc6d4d2c-d780-4d10-8b8f-10629df5ddf6"
+    }
+  }
+}

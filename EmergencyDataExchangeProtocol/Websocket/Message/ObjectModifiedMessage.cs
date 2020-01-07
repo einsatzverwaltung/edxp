@@ -1,5 +1,6 @@
 ﻿using EmergencyDataExchangeProtocol.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace EmergencyDataExchangeProtocol.Websocket.Message
         /// Trigger Reason for this message
         /// </summary>
         [JsonProperty("@messageTrigger")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public MessageSentTrigger messageTrigger { get; set; }
 
     }

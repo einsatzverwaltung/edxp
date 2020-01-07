@@ -165,7 +165,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdateObject(System.Int32,EmergencyDataExchangeProtocol.Models.EmergencyObject)">
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdateObject(System.Guid,EmergencyDataExchangeProtocol.Models.EmergencyObject)">
             <summary>
             Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.
             </summary>

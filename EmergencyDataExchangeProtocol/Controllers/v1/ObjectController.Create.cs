@@ -24,7 +24,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         [ProducesResponseType(401)]
         [ProducesResponseType(409)]
         public ActionResult<EmergencyObject> CreateObject([FromBody] EmergencyObject data)
-        {            
+        {
             var identity = GetCurrentIdentity();
 
             if (data == null)
@@ -45,16 +45,18 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             data.header.createdBy = identity.uid;
             data.header.lastUpdated = DateTime.UtcNow;
             data.header.documentVersion = 1;
+            /* Minimum TTL is 120 minutes */
             if (data.header.timeToLive < 120 && data.header.timeToLive != 0)
             {
                 data.header.timeToLive = 120;
             }
+            /* Maximum TTL on this Server = 30 days */
             if (data.header.timeToLive > 60 * 24 * 30)
             {
                 data.header.timeToLive = 60 * 24 * 30;
             }
 
-            if (!Startup.registeredDataTypes.ContainsKey(data.header.dataType))
+            if (!EmergencyModelInformation.RegisteredDataTypes.ContainsKey(data.header.dataType))
             {
                 var details = new ProblemDetails();
                 details.Status = 400;
@@ -62,9 +64,19 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
                 return new BadRequestObjectResult(details);
             }
 
-            var dataType = Startup.registeredDataTypes[data.header.dataType];
+            var dataType = EmergencyModelInformation.RegisteredDataTypes[data.header.dataType];
 
-            var body = ((JObject)data.data).ToObject(dataType);
+            /* Check TTL for datatype */
+            if (dataType.MaximumTimeToLive != 0)
+            {
+                if (data.header.timeToLive > dataType.MaximumTimeToLive || data.header.timeToLive == 0)
+                {
+                    data.header.timeToLive = dataType.MaximumTimeToLive;
+                }
+            }
+
+
+            var body = ((JObject)data.data).ToObject(dataType.Typ);
 
             var valid = ModelState.IsValid;
 

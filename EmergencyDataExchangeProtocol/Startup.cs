@@ -27,11 +27,9 @@ namespace EmergencyDataExchangeProtocol
 {
     public class Startup
     {
-        public static Dictionary<EmergencyObjectDataTypes, Type> registeredDataTypes = new Dictionary<EmergencyObjectDataTypes, Type>()
-        {
-            [EmergencyObjectDataTypes.Einsatz] = typeof(EmergencyObjects.einsatz.Einsatz),
-            [EmergencyObjectDataTypes.Einsatzmittel] = typeof(EmergencyObjects.einsatzmittel.Einsatzmittel)
-        };
+        
+
+
 
         public Startup(IConfiguration configuration)
         {

@@ -1,0 +1,1334 @@
+﻿{
+  "swagger": "2.0",
+  "info": {
+    "title": "Emergency Data API",
+    "description": "A rest and websocket protocol for exchanging Emergency Data between government agencies",
+    "termsOfService": "https://example.com/terms",
+    "contact": {
+      "name": "Holger Martiker",
+      "url": "https://www.einsatzverwaltung.de",
+      "email": "h.martiker@einsatzverwaltung.de"
+    },
+    "license": {
+      "name": "Use under LICX",
+      "url": "https://example.com/license"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/Account": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Returns Information about the current logged in Account",
+        "operationId": "GetAccountInfo",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/MyAccount"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Aktualisieren der Accountinformationen",
+        "operationId": "UpdateMyAccount",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "Eigene Accountinfos",
+            "schema": {
+              "$ref": "#/definitions/MyAccount"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/MyAccount"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Creates a new Account",
+        "operationId": "CreateNewAccount",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "value",
+            "in": "body",
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/CreateAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/MyAccountWithApiKeys"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Account/list": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Returns a List of all available Endpoints on this EDXP Instance",
+        "operationId": "GetAccountList",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicAccountInfo"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Account/{id}": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Holt Accountinformationen anhand einer ID aus der Datenbank",
+        "operationId": "Get",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/PublicAccountInfo"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Aktualisieren der Accountinformationen",
+        "operationId": "UpdateAccount",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "uuid"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "Eigene Accountinfos",
+            "schema": {
+              "$ref": "#/definitions/MyAccount"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/MyAccount"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Deletes an Account (And all objects with this account as owner)",
+        "operationId": "Delete",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the Account",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Account/apiKeys": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Returns a List of all API Keys for the current authorized Account",
+        "operationId": "GetApiKeyList",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object": {
+      "post": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Creates a new Object in the Datastore. The optional UID must be Unique.\r\nIf an object with the same UID already exists then the Post Method fails.",
+        "operationId": "CreateObject",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "The data which should be stored",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/{uid}": {
+      "put": {
+        "tags": [
+          "Object"
+        ],
+        "operationId": "UpdateObject",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "format": "uuid"
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Deletes an Object from Objectstore by its UID. This is only allowed by it's Owner\r\nor someone with Owner Permissions.",
+        "operationId": "DeleteObject",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/jsonpatch/{uid}": {
+      "patch": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Modifies Object by applying Json Patch Document to existing Object",
+        "operationId": "PatchObjectByJsonPatch",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "format": "uuid"
+          },
+          {
+            "name": "jsonPatchDocument",
+            "in": "body",
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Operation"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/partial/{uid}": {
+      "patch": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Patch Documents by applying only set fields to existing Object in Datastore",
+        "operationId": "PatchObjectByProperties",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "description": "ID of the Object which should be patched",
+            "format": "uuid"
+          },
+          {
+            "name": "jsonUpdateDocument",
+            "in": "body",
+            "description": "The JSON Document containing only these fields and attributes which should be updated in datastore",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ValidationProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/{id}/{subpath}": {
+      "get": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.",
+        "operationId": "GetObjectPart",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique ID of the Document",
+            "format": "uuid"
+          },
+          {
+            "type": "string",
+            "name": "subpath",
+            "in": "path",
+            "required": true,
+            "description": "Path of the Document Field Structure where the document should be started from"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/{id}": {
+      "get": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Returns an Object from the Datastore. Identified by its unique ID.",
+        "operationId": "GetObject",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/EmergencyObject"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Object/modified/{since}": {
+      "get": {
+        "tags": [
+          "Object"
+        ],
+        "summary": "Returns an Object from the Datastore. Identified by its unique ID.",
+        "operationId": "GetModifiedObjects",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "since",
+            "in": "path",
+            "required": true,
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EmergencyObject"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "MyAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "isServerAdmin": {
+          "type": "boolean"
+        },
+        "accessIdentities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contact": {
+          "$ref": "#/definitions/ContactDetails"
+        }
+      }
+    },
+    "ContactDetails": {
+      "type": "object",
+      "required": [
+        "contactName",
+        "contactMail"
+      ],
+      "properties": {
+        "contactName": {
+          "type": "string"
+        },
+        "contactMail": {
+          "type": "string"
+        }
+      }
+    },
+    "ProblemDetails": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateAccountRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "isServerAdmin",
+        "accessIdentities",
+        "contact"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 5
+        },
+        "isServerAdmin": {
+          "type": "boolean"
+        },
+        "accessIdentities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contact": {
+          "$ref": "#/definitions/ContactDetails"
+        }
+      }
+    },
+    "MyAccountWithApiKeys": {
+      "type": "object",
+      "properties": {
+        "apiKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "isServerAdmin": {
+          "type": "boolean"
+        },
+        "accessIdentities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contact": {
+          "$ref": "#/definitions/ContactDetails"
+        }
+      }
+    },
+    "PublicAccountInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "accessKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contact": {
+          "$ref": "#/definitions/ContactDetails"
+        }
+      }
+    },
+    "EmergencyObject": {
+      "type": "object",
+      "properties": {
+        "@uid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "@header": {
+          "$ref": "#/definitions/EmergencyObjectHeader"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "EmergencyObjectHeader": {
+      "type": "object",
+      "properties": {
+        "documentVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastUpdatedBy": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "access": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EmergenyObjectAccessContainer"
+          }
+        },
+        "timeToLive": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "dataType": {
+          "type": "string",
+          "enum": [
+            "Einsatz",
+            "Einsatzmittel"
+          ]
+        }
+      }
+    },
+    "EmergenyObjectAccessContainer": {
+      "type": "object",
+      "properties": {
+        "idPattern": {
+          "type": "string"
+        },
+        "acl": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EmergencyObjectAccess"
+          }
+        }
+      }
+    },
+    "EmergencyObjectAccess": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "None",
+            "Read",
+            "Write",
+            "Grant",
+            "Owner"
+          ]
+        }
+      }
+    },
+    "ValidationProblemDetails": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "properties": {
+        "errors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "readOnly": true
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "object"
+        },
+        "path": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        }
+      }
+    },
+    "Einsatzmittel": {
+      "type": "object",
+      "required": [
+        "stamm"
+      ],
+      "properties": {
+        "stamm": {
+          "$ref": "#/definitions/EinsatzmittelStamm"
+        },
+        "status": {
+          "$ref": "#/definitions/EinsatzmittelStatus"
+        },
+        "telemetry": {
+          "$ref": "#/definitions/EinsatzmittelTelemetry"
+        }
+      }
+    },
+    "EinsatzmittelStamm": {
+      "type": "object",
+      "required": [
+        "rufname"
+      ],
+      "properties": {
+        "rufname": {
+          "type": "string"
+        },
+        "normbezeichnung": {
+          "type": "string"
+        },
+        "kennzeichen": {
+          "type": "string"
+        }
+      }
+    },
+    "EinsatzmittelStatus": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 8.0,
+          "minimum": 1.0
+        },
+        "position": {
+          "$ref": "#/definitions/GeoPosition"
+        }
+      }
+    },
+    "EinsatzmittelTelemetry": {
+      "type": "object",
+      "properties": {
+        "kraftstoffstand": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 100.0,
+          "minimum": 0.0
+        }
+      }
+    },
+    "GeoPosition": {
+      "type": "object",
+      "required": [
+        "coordinates"
+      ],
+      "properties": {
+        "coordinates": {
+          "description": "WSG84 Koordinaten",
+          "$ref": "#/definitions/GeoCoordinates"
+        },
+        "positionTime": {
+          "type": "string",
+          "description": "Zeitpunkt der aktuellen Position",
+          "format": "date-time"
+        },
+        "accuracy": {
+          "type": "integer",
+          "description": "Genaugikeit der Positionsdaten in Metern",
+          "format": "int32"
+        },
+        "heading": {
+          "type": "integer",
+          "description": "Aktuelle Richtung in Grad",
+          "format": "int32",
+          "maximum": 359.0,
+          "minimum": 0.0
+        },
+        "speed": {
+          "type": "number",
+          "description": "Aktuelle Geschwindigkeit in m/s",
+          "format": "double"
+        }
+      }
+    },
+    "GeoCoordinates": {
+      "type": "object",
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "description": "WGS84 Latitude der aktuellen Position",
+          "format": "double",
+          "maximum": 90.0,
+          "minimum": -90.0
+        },
+        "longitude": {
+          "type": "number",
+          "description": "WGS84 Longitude der aktuellen Position",
+          "format": "double",
+          "maximum": 180.0,
+          "minimum": -180.0
+        },
+        "altitude": {
+          "type": "number",
+          "description": "Altitude (Höhe) in Metern",
+          "format": "double"
+        }
+      }
+    },
+    "Einsatz": {
+      "type": "object",
+      "required": [
+        "stamm"
+      ],
+      "properties": {
+        "stamm": {
+          "$ref": "#/definitions/EinsatzStamm"
+        },
+        "lagemeldungen": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Lagemeldung"
+          }
+        }
+      }
+    },
+    "EinsatzStamm": {
+      "type": "object",
+      "properties": {
+        "einsatzort": {
+          "$ref": "#/definitions/Address"
+        }
+      }
+    },
+    "Lagemeldung": {
+      "type": "object",
+      "required": [
+        "zeit",
+        "meldung"
+      ],
+      "properties": {
+        "zeit": {
+          "type": "string",
+          "description": "Zeitpunkt, zu dem die Lagemeldung abgegeben wurde",
+          "format": "date-time"
+        },
+        "meldung": {
+          "type": "string",
+          "description": "Meldungstext, der den Inhalt der Lagemeldung enthält"
+        },
+        "quelle": {
+          "type": "string",
+          "description": "Quelle/Absender der Lagemeldung"
+        },
+        "abfasser": {
+          "type": "string",
+          "description": "Name des Abfassers der Lagemeldung (z.B. Disponent)"
+        },
+        "referenzEinsatzmittel": {
+          "type": "string",
+          "description": "Referenz auf ein bestehendes Einsatzmittel, dass die Lagemeldung abgegeben hat",
+          "format": "uuid"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "stadt": {
+          "type": "string"
+        },
+        "stadtteil": {
+          "type": "string"
+        },
+        "postleitzahl": {
+          "type": "string",
+          "maxLength": 5,
+          "minLength": 5,
+          "pattern": "^[0-9]*$"
+        },
+        "strasse": {
+          "type": "string"
+        },
+        "hausnummer": {
+          "type": "string"
+        },
+        "koordinaten": {
+          "$ref": "#/definitions/GeoCoordinates"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "description": "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
+}

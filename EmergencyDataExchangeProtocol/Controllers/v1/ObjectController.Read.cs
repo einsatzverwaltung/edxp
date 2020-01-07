@@ -33,7 +33,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             var tokens = subpath.Split('/');
             var path = string.Join("[0].", tokens);
 
-            var dataJobject = new JObject(res.data);
+            var dataJobject = JObject.FromObject(res.data.data);
 
             var partOfResult = dataJobject.SelectToken(path);
 

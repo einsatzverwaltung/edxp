@@ -32,7 +32,6 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         public ObjectController(IGenericDataStore db)
         {
             this.db = db;
-
         }
 
         private EndpointIdentity GetCurrentIdentity()
@@ -124,32 +123,6 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
             return result;
         }
 
-        /// <summary>
-        /// Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.
-        /// </summary>
-        /// <param name="id">Unique ID of the Document</param>
-        /// <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
-        /// <returns></returns>
-        [HttpGet("{id:guid}/{**subpath}")]
-        public ActionResult<object> GetObjectPart(Guid id, string subpath)
-        {
-            var res = db.GetObjectFromDatastore(id);
-            var emergencyObject = res.data as EmergencyObject;
-
-            if (!CanRead(emergencyObject, GetCurrentIdentity(), subpath))
-                return Forbid();
-
-            var tokens = subpath.Split('/');
-            var path = string.Join("[0].", tokens);
-
-            var dataJobject = new JObject(res.data);
-
-            var partOfResult = dataJobject.SelectToken(path);
-
-            if (res == null)
-                return NotFound();
-            return Ok(partOfResult);
-        }
 
 
 

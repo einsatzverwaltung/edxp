@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmergencyDataExchangeProtocol.Controllers.v1
 {
+    /// <summary>
+    /// Exposes an Endpoint to manage Accounts on this Server
+    /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize(Policy = "ExternalApi")]
@@ -39,6 +42,9 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(MyAccount))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public async Task<MyAccount> GetAccountInfo()
         {
             var identity = GetCurrentIdentity();
@@ -56,6 +62,10 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// </summary>
         /// <returns></returns>
         [HttpGet("list")]
+        [HttpGet("modified/{since}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<PublicAccountInfo>))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public async Task<IEnumerable<PublicAccountInfo>> GetAccountList()
         {
             var enumerator = db.GetEndpointIdentities();
@@ -170,7 +180,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         public async Task<IActionResult> UpdateMyAccount([FromBody] MyAccount data)
         {
             var identity = GetCurrentIdentity();
-            
+
             identity.contact = data.contact;
             identity.name = data.name;
 
@@ -211,8 +221,9 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// </summary>
         /// <returns></returns>
         [HttpGet("apiKeys")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(200, Type = typeof(List<string>))]
         [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public async Task<IActionResult> GetApiKeyList()
         {
             var identity = GetCurrentIdentity();

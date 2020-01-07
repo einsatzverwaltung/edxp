@@ -44,9 +44,11 @@ Grundsätzlich kann über die Access-Control-List ein Zugriff auf ein bestimmtes
 ## API Zugriff
 Der Zugriff auf die API erfolgt mittes HTTPS und einem API Key. Dieser API Key kann über den Account-Controller angelegt werden. Es ist durchaus möglich und erwünscht, dass eine Organisation mehrerer API Keys verwendet, sofern mehrere Systeme an der Kommunikation beteiligt sind. (Es soll also pro angeschlossenem System eines Teilnehmers, ein API Key erstellt werden) Der API Key wird als Teil des HTTP-Headers mitgesendet. Bei folgendem Beispiel wird bei einer Post Anfrage im Header der Authorization Header mitgesendet. Keine Auswirkung hat der API Key auf die Access Identity. Diese ist fest mit dem Account verknüpft und gilt für alle API Keys des Accounts.
 
-`POST https://test.einsatzverwaltung.de/v1/Objects/`
-`Host: test.einsatzverwaltung.de`
-`Authorization: Bearer <API Key>`
+```
+POST https://test.einsatzverwaltung.de/v1/Objects/
+Host: test.einsatzverwaltung.de
+Authorization: Bearer <API Key>
+```
 
 Eine genaue Erläuterung der Möglichkeiten der REST API gibt das aktuelle Swaggerfile. (Referenzimplementierung: https://edxp.bosmesh.org/swagger/v1/swagger.json) Mit Hilfe der OpenAPI Spezifikation können Sie leicht den Client-Code für Ihre Integration generieren lassen. Außerdem ist eine API Web UI für die aktuelle Implementierung unter https://edxp.bosmesh.org/swagger/index.html erreichbar.
 # Beispiele
@@ -54,11 +56,21 @@ Im folgenden werden ein paar gängige Beispiele aufgezeigt, die die Nutzung des 
 ## Anlegen eines neuen Objektes (mit ID)
 Soll ein neues Objekt angelegt werden so kann bereits in dem eigenen System eine zufällige UID generiert und vergeben werden. Diese UID wird dann durch das EDXP System übernommen - sofern es keine Kollision mit einem bestehenden Datensatz gibt.
 #### Request
-`POST https://test.einsatzverwaltung.de/v1/Objects/`
-`Authorization: Bearer <API Key>`
-``
+```
+POST https://test.einsatzverwaltung.de/v1/Objects/
+Authorization: Bearer <API Key>
+```
 
 ## Anlegen eines neuen Objektes (ohne ID)
+
+# Websocket Live-Update
+Über eine Websocketverbindung zum Server ist es möglich Aktualisierungen an Objekten automatisch nach der Änderung zu empfangen. Dazu muss eine Websocketverbindung zum Endpunkt ´wss://server/ws?key=<API Key>&since=<Zeitpunkt>´ geöffnet werden.
+
+Dabei besteht optional die Möglichkeit durch Angabe eines Zeitpunktes der letzten Verbindung alle seit dem modifizierten Objekte zusenden zu lassen. Ist dieser Zeitpunkt angegeben, so werden nach dem Aufbau der Verbindung automatisch alle Objekte übertragen.
+    
+Dabei existieren zwei Parameter:
+    - key => Ist der API Key, der auch für die REST Aufrufe verwendet wird. Dieser ist zwingend erforderlich.
+    - since => Gibt einen Zeitpunkt im ISO-8601 Format an, wann das letzte Mal eine Verbindung bestanden hatte. 
 
 # Roadmap
 Wir begrüßen die Teilnahme an der Entwicklung weiterer Features dieses Protokolls. Ein paar Ideen sind bereits hier zusammengefasst. Bitte erstelle ein Fork vom Repository und beginne dort die Entwicklung. Am Ende wird dies auf unserem GIT Server zusammengefasst.

@@ -69,8 +69,38 @@ Authorization: Bearer <API Key>
 Dabei besteht optional die Möglichkeit durch Angabe eines Zeitpunktes der letzten Verbindung alle seit dem modifizierten Objekte zusenden zu lassen. Ist dieser Zeitpunkt angegeben, so werden nach dem Aufbau der Verbindung automatisch alle Objekte übertragen.
     
 Dabei existieren zwei Parameter:
-    - key => Ist der API Key, der auch für die REST Aufrufe verwendet wird. Dieser ist zwingend erforderlich.
-    - since => Gibt einen Zeitpunkt im ISO-8601 Format an, wann das letzte Mal eine Verbindung bestanden hatte. 
+* key => Ist der API Key, der auch für die REST Aufrufe verwendet wird. Dieser ist zwingend erforderlich.
+* since => Gibt einen Zeitpunkt im ISO-8601 Format an, wann das letzte Mal eine Verbindung bestanden hatte. 
+
+## Live-Update Messages
+
+Bei Änderung eines Objektes werden die Änderungen an alle aktuell verbundenen Websocketclients weitergeleitet, die mindestens für den Lesezugriff auf das Objekt berechtigt sind. Diese Nachricht enthält Teile des Headerfeldes des Objekts sowie entweder die gesamte Nachricht oder nur den geänderten Teil der Nachricht.
+Eine Teilnachricht wird durch das Feld isParted mit dem Wert True gekennzeichnet. Dann ist immer auch das Feld partPath vorhanden, welches den Pfad innerhalb des Objektes angibt, für den diese Daten geändert wurden.
+
+Nachfolgend ist eine Beispielnachricht zu sehen:
+
+```
+{
+  "@messageTrigger": "Updated",
+  "isParted": true,
+  "partPath": "lagemeldungen",
+  "@uid": "02715595-fae3-45b2-8fca-50da3de7cbf2",
+  "@header": {
+    "documentVersion": 15,
+    "timeToLive": 0,
+    "dataType": "Einsatz"
+  },
+  "data": [
+    {
+      "zeit": "2019-12-29T23:00:00Z",
+      "meldung": "Testmeldung",
+      "quelle": null,
+      "abfasser": null,
+      "referenzEinsatzmittel": null
+    }
+  ]
+}
+```
 
 # Roadmap
 Wir begrüßen die Teilnahme an der Entwicklung weiterer Features dieses Protokolls. Ein paar Ideen sind bereits hier zusammengefasst. Bitte erstelle ein Fork vom Repository und beginne dort die Entwicklung. Am Ende wird dies auf unserem GIT Server zusammengefasst.

@@ -12,6 +12,42 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
     public partial class ObjectController
     {
         /// <summary>
+        /// Updates the Access Control List of the requested Document. (Only available for Owner and Endpoints with Grant-Permission)
+        /// </summary>
+        /// <param name="uid">Unique ID of the Document</param>
+        /// <returns></returns>
+        [HttpPut("header/{uid:guid}")]
+        [ProducesResponseType(200, Type = typeof(List<EmergenyObjectAccessContainer>))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public ActionResult<List<EmergenyObjectAccessContainer>> UpdateObjectACL(Guid uid, [FromBody]List<EmergenyObjectAccessContainer> newACL)
+        {
+            var res = db.GetObjectFromDatastore(uid);
+            var identity = GetCurrentIdentity();
+
+            if (res.data == null)
+                return NotFound();
+
+            if (!CanGrant(res.data, identity))
+                return Forbid();
+
+            var emergencyObject = res.data as EmergencyObject;
+
+            if (emergencyObject.header == null)
+                emergencyObject.header = new EmergencyObjectHeader();
+
+            emergencyObject.header.Access = newACL;
+
+            db.UpdateObjectInDatastore(emergencyObject);
+
+            changeTracker.ObjectChanged(emergencyObject.uid.Value, Websocket.Message.MessageSentTrigger.Updated, emergencyObject, null);
+
+            return Ok(emergencyObject.header.Access);
+        }
+
+
+        /// <summary>
         /// Updates an entire Object. If the Document doesn't exist it will be created. Otherwise the document is updated.
         /// </summary>
         /// <param name="id">The ID of the object</param>

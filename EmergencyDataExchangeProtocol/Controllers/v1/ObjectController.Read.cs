@@ -10,6 +10,50 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
 {
     public partial class ObjectController
     {
+        /// <summary>
+        /// Returns the Access Control List of the requested Document.
+        /// </summary>
+        /// <param name="id">Unique ID of the Document</param>
+        /// <returns></returns>
+        [HttpGet("header/{id:guid}")]
+        [ProducesResponseType(200, Type = typeof(List<EmergenyObjectAccessContainer>))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public ActionResult<List<EmergenyObjectAccessContainer>> GetObjectACL(Guid id)
+        {
+            var res = db.GetObjectFromDatastore(id);
+
+            if (res.data == null)
+                return NotFound();
+
+            var emergencyObject = res.data as EmergencyObject;
+
+            if (emergencyObject.header == null)
+                return Ok(null);
+
+            return Ok(emergencyObject.header.Access);
+        }
+
+        /// <summary>
+        /// Returns the Header of the requested Document.
+        /// </summary>
+        /// <param name="id">Unique ID of the Document</param>
+        /// <returns></returns>
+        [HttpGet("header/{id:guid}")]
+        [ProducesResponseType(200, Type = typeof(EmergencyObjectHeader))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public ActionResult<EmergencyObjectHeader> GetObjectHeader(Guid id)
+        {
+            var res = db.GetObjectFromDatastore(id);
+
+            if (res.data == null)
+                return NotFound();
+
+            var emergencyObject = res.data as EmergencyObject;
+
+            return Ok(emergencyObject.header);
+        }
 
         /// <summary>
         /// Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.
@@ -17,7 +61,7 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
         /// <param name="id">Unique ID of the Document</param>
         /// <param name="subpath">Path of the Document Field Structure where the document should be started from</param>
         /// <returns></returns>
-        [HttpGet("{id:guid}/{**subpath}")]
+        [HttpGet("{id:guid}/{**subpath}")]        
         [ProducesResponseType(200, Type = typeof(object))]
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]

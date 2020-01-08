@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EmergencyDataExchangeProtocol.Websocket.Message
 {
-    public class EmergencyObjectMessage
+    public class EmergencyObjectMessage : EmergencyObject
     {
         /// <summary>
         /// Trigger Reason for this message
@@ -19,17 +19,6 @@ namespace EmergencyDataExchangeProtocol.Websocket.Message
 
         public bool isParted { get; set; }
         public string partPath { get; set; }
-
-        [JsonProperty("@uid")]
-        public Guid? uid { get; set; }
-
-        [JsonProperty("@header")]
-        public EmergencyObjectHeader header { get; set; }
-
-        public object data { get; set; }
-
-
-
     }
 
     /// <summary>

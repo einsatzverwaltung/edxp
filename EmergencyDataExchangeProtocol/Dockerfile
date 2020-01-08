@@ -18,7 +18,7 @@ RUN dotnet publish "EmergencyDataExchangeProtocol.csproj" -c Release -o /app/pub
 
 FROM base AS final
 
-ENV DB_HOST "localhost"
+ENV DB_SERVER "localhost"
 ENV DB_PORT "27017"
 ENV DB_NAME "admin"
 ENV DB_USER ""

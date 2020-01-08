@@ -112,6 +112,29 @@ namespace EmergencyDataExchangeProtocol.Controllers.v1
 
 
         /// <summary>
+        /// Checks if the user can change Permissions on the document
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private bool CanGrant(EmergencyObject obj, EndpointIdentity id)
+        {
+            bool isOwner = (obj.header.createdBy == id.uid);
+
+            if (isOwner)
+                return true;
+
+            /* Berechtigung über AccessLevel prüfen */
+            if (access.CheckAccessForPath("*", id.accessIdentity, obj.header.Access, AccessLevelEnum.Grant) >= AccessLevelEnum.Grant)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
         /// Removes all Subpaths which are not allowed for this user to be viewed.
         /// </summary>
         /// <param name="allowedPaths"></param>

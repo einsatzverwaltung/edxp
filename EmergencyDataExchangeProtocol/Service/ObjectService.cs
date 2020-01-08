@@ -45,7 +45,7 @@ namespace EmergencyDataExchangeProtocol.Service
                     else
                     {
                         /* Lese-Zugriff nur auf bestimmte Unterpfade möglich, daher reduzieren wir das Objekt, dass wir zurück geben */
-                        emergencyObject.data = RemoveUnallowedPaths(accessablePaths, emergencyObject.data);
+                        emergencyObject.data = RemoveUnallowedPaths<object>(accessablePaths, emergencyObject.data);
                         result.Add(emergencyObject);
                     }
                 }
@@ -59,20 +59,22 @@ namespace EmergencyDataExchangeProtocol.Service
         /// <summary>
         /// Removes all Subpaths which are not allowed for this user to be viewed.
         /// </summary>
-        /// <param name="allowedPaths"></param>
-        /// <param name="data"></param>
+        /// <param name="allowedPaths">List of allowed Paths for this user</param>
+        /// <param name="data">Dataobject</param>
+        /// <param name="subPath">Sub Path for the given Data Object</param>
         /// <returns></returns>
-        private object RemoveUnallowedPaths(List<string> allowedPaths, object data)
+        public T RemoveUnallowedPaths<T>(List<string> allowedPaths, object data, string subPath = null)
         {
             var result = new JObject(data);
+            
 
 
 
-            return result;
+            return (T)result.ToObject(typeof(T)); 
         }
 
 
-        private List<string> GetAccessPaths(AccessLevelEnum requiredAccessLevel, EmergencyObject obj, EndpointIdentity id)
+        public List<string> GetAccessPaths(AccessLevelEnum requiredAccessLevel, EmergencyObject obj, EndpointIdentity id)
         {
             List<string> res;
             bool isOwner = (obj.header.createdBy == id.uid);

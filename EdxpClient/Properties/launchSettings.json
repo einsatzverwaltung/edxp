@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "EdxpClient": {
-      "commandName": "Project",
-      "commandLineArgs": "object edit 02715595-fae3-45b2-8fca-50da3de7cbf2 lagemeldungen"
-    }
-  }
-}

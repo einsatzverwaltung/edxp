@@ -111,6 +111,14 @@
             <param name="subPath"></param>
             <returns></returns>
         </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.CanGrant(EmergencyDataExchangeProtocol.Models.EmergencyObject,EmergencyDataExchangeProtocol.Models.auth.EndpointIdentity)">
+            <summary>
+            Checks if the user can change Permissions on the document
+            </summary>
+            <param name="obj"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.RemoveUnallowedPaths(System.Collections.Generic.List{System.String},System.Object)">
             <summary>
             Removes all Subpaths which are not allowed for this user to be viewed.
@@ -143,6 +151,20 @@
             <param name="jsonUpdateDocument">The JSON Document containing only these fields and attributes which should be updated in datastore</param>
             <returns>Returns the updated document</returns>
         </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectACL(System.Guid)">
+            <summary>
+            Returns the Access Control List of the requested Document.
+            </summary>
+            <param name="id">Unique ID of the Document</param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectHeader(System.Guid)">
+            <summary>
+            Returns the Header of the requested Document.
+            </summary>
+            <param name="id">Unique ID of the Document</param>
+            <returns></returns>
+        </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.GetObjectPart(System.Guid,System.String)">
             <summary>
             Returns an partial Object from the Datastore based on the given SubPath Structure of the document. Identified by its unique ID.
@@ -163,6 +185,13 @@
             Returns an Object from the Datastore. Identified by its unique ID.
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdateObjectACL(System.Guid,System.Collections.Generic.List{EmergencyDataExchangeProtocol.Models.EmergenyObjectAccessContainer})">
+            <summary>
+            Updates the Access Control List of the requested Document. (Only available for Owner and Endpoints with Grant-Permission)
+            </summary>
+            <param name="uid">Unique ID of the Document</param>
             <returns></returns>
         </member>
         <member name="M:EmergencyDataExchangeProtocol.Controllers.v1.ObjectController.UpdateObject(System.Guid,EmergencyDataExchangeProtocol.Models.EmergencyObject)">
@@ -265,12 +294,13 @@
             </summary>
             <param name="db"></param>
         </member>
-        <member name="M:EmergencyDataExchangeProtocol.Service.ObjectService.RemoveUnallowedPaths(System.Collections.Generic.List{System.String},System.Object)">
+        <member name="M:EmergencyDataExchangeProtocol.Service.ObjectService.RemoveUnallowedPaths``1(System.Collections.Generic.List{System.String},System.Object,System.String)">
             <summary>
             Removes all Subpaths which are not allowed for this user to be viewed.
             </summary>
-            <param name="allowedPaths"></param>
-            <param name="data"></param>
+            <param name="allowedPaths">List of allowed Paths for this user</param>
+            <param name="data">Dataobject</param>
+            <param name="subPath">Sub Path for the given Data Object</param>
             <returns></returns>
         </member>
         <member name="P:EmergencyDataExchangeProtocol.Websocket.Message.EmergencyObjectMessage.messageTrigger">

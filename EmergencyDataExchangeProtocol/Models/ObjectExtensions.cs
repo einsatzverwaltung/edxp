@@ -1,4 +1,4 @@
-﻿using EmergencyDataExchangeProtocol.Models.ArrayExtensions;
+﻿using EmergencyDataExchangeProtocol.ArrayExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
